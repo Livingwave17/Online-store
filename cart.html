@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="project.css" />
+    <script type="text/javascript" src="project.js"></script>
+</head>
+<body onload="getProducts('cart')">
+    <div id="loading" class="hidden">
+        <img id="loading-image" src="https://cdn.dribbble.com/users/493970/screenshots/1691794/progress.gif">
+    </div>
+    <div id="products" class="hidden">
+        <span>Talcioc</span>
+        <div id="cart">
+            <span>Shopping Cart</span>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <td>Name</td>
+                        <td>Price</td>
+                        <td>Quantity</td>
+                        <td>Subtotal</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody id="cartBody">
+
+                </tbody>
+            </table>
+            <div>
+                <span id="counter"></span>
+                <span id="total"></span>
+                <button>Checkout</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

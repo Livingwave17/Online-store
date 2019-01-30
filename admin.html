@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+    <link rel="stylesheet" type="text/css" href="project.css" />
+    <script src="project.js"></script>
+</head>
+<body onload="getProducts('admin')">
+    <div id="loading">
+        <img id="loading-image" src="https://cdn.dribbble.com/users/493970/screenshots/1691794/progress.gif">
+    </div>
+    <div id="products" class="hidden">
+        <div>
+            <a href="./cart.html"><button>Shopping Cart</button></a>
+            <div>
+                <span>Manage Products</span>
+                <button onclick="manage('add')">+ Add new product</button>
+            </div>
+            <table border="1" id="adminTable">
+                <thead>
+                    <td>Imagine</td>
+                    <td>Nume</td>
+                    <td>Pret</td>
+                    <td>Cantitate</td>
+                    <td></td>
+                </thead>
+                <tbody id="productsAdmin">
+                    
+                </tbody>
+            </table>
+            <table id="manage" class="hidden">
+                <thead>
+                    <tr>
+                        <td><span id="action"></span></td>
+                        <td>
+                            <button onclick="update(keyEdit)">+ Save</button>
+                            <button onclick="update(keyEdit)">Cancel</button>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span>Image</span></td>
+                        <td>
+                            <input type='text' id="manageImage">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>Name</span></td>
+                        <td>
+                            <input type='text' id="manageName">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>Description</span></td>
+                        <td>
+                            <textarea id="manageDescription"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>Price</span></td>
+                        <td>
+                            <input type='number' id="managePrice" min="0">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>Stock</span></td>
+                        <td>
+                            <input type="number" id="manageStock" min="0">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

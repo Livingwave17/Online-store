@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="project.css" />
+    <script type="text/javascript" src="project.js"></script>
+</head>
+<body onload="getDetails()">
+    <div class="content" id="details-content">
+        <div id="loading">
+            <img id="loading-image" src="https://cdn.dribbble.com/users/493970/screenshots/1691794/progress.gif">
+        </div>
+        <span id="popup" class="hidden">Added to cart</span>
+        <div id="details" class="content">
+            <a href="./cart.html"><button>Shopping Cart</button></a>
+            <div class="col-sm-12 col-md-6 inline-block">
+                <img id="detail-image" src=''>
+            </div>
+            <div class="col-sm-12 col-md-6 inline-block" id="detail-text">
+                <span id="detail-name"></span><br>
+                <span id="detail-price"></span><br>
+                <span id="detail-price">Cantitate: <input id="q" type="number" value="1" max="" min="0"></span>
+                <button onclick="addToCart()">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
