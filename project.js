@@ -4,6 +4,7 @@ var product;
 var keyEdit = "";
 
 function getProducts(x) {
+    //localStorage.clear()
     console.log(x);
     document.getElementById("products").classList.add("hidden");
     document.getElementById("loading").classList.remove("hidden");
@@ -73,8 +74,9 @@ function addToCart() {
     if (Object.keys(localStorage).includes(name)){
         inCart = JSON.parse(localStorage.getItem(name)).quantity;
         newQuantity = quantity + inCart;
+    } else {
+        newQuantity = quantity;
     }
-    console.log(quantity + inCart)
     var cartItem = JSON.stringify({
         "name": name,
         "price": price,
@@ -87,17 +89,18 @@ function addToCart() {
             document.getElementById("popup").classList.add("hidden");
         }, 3000);
     } else {
-        console.log("Insuficient stock")
+        document.getElementById("invalidOrder").classList.remove("hidden");
+        setTimeout(function() {
+            document.getElementById("invalidOrder").classList.add("hidden");
+        }, 3000);
     }
-    
-    //localStorage.clear();
 }
 
 function getCart() {
     var str = "";
     var total = 0;
     var counter = 0;
-    console.log(localStorage);
+    // if (s-a schimbat ceva in database) {updatez localStorage}
     for (var key in localStorage) {
         if (key === 'length'){break}
         str += `
@@ -189,35 +192,42 @@ function manage(product) {
     if (product !== 'add') {
         getData(product);
         keyEdit = product.name;
+    } else {
+        getData(null);
     }
     console.log(keyEdit)
 }
 
 function getData(product){
-    document.getElementById('manageImage').value = product.image
-    document.getElementById('manageName').value = product.name
-    document.getElementById('manageDescription').value = product.description
-    document.getElementById('managePrice').value = product.price
-    document.getElementById('manageStock').value = product.stock
+    if (product !== null) {
+        document.getElementById('manageImage').value = product.image
+        document.getElementById('manageName').value = product.name
+        document.getElementById('manageDescription').value = product.description
+        document.getElementById('managePrice').value = product.price
+        document.getElementById('manageStock').value = product.stock
+    } else {
+        document.getElementById('manageImage').value = "";
+        document.getElementById('manageName').value = "";
+        document.getElementById('manageDescription').value = "";
+        document.getElementById('managePrice').value = "";
+        document.getElementById('manageStock').value = "";
+    }
 }
 
 function update(keyEdit) {
-    var newProduct = {}
     var image = document.getElementById('manageImage').value;
     var name = document.getElementById('manageName').value;
     var description = document.getElementById('manageDescription').value;
     var price = document.getElementById('managePrice').value;
     var stock = document.getElementById('manageStock').value;
 
-    var newProductValue = {
+    var newProduct = {
         "image":image,
         "name":name,
         "description":description,
         "price":price,
         "stock":stock
     }
-
-    newProduct[name] = newProductValue;
     console.log(newProduct)
     console.log(JSON.stringify(newProduct))
     
@@ -230,7 +240,7 @@ function update(keyEdit) {
                 document.getElementById('manage').classList.add('hidden');
             }
         }
-        xhttp.open("POST", `https://final-project-d6167.firebaseio.com/.json`, true)
+        xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${name}.json`, true)
         xhttp.send(JSON.stringify(newProduct));
     } else {
         var xhttp = new XMLHttpRequest();
@@ -243,6 +253,34 @@ function update(keyEdit) {
             }
         }
         xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${keyEdit}.json`, true)
-        xhttp.send(JSON.stringify(newProductValue));
+        xhttp.send(JSON.stringify(newProduct));
+    }
+}
+
+function checkout() {
+    var buy = confirm("Confirm transaction?");
+    if (buy == true) {
+        acquisition()
+    }
+}
+
+function checkoutRedirect(){
+    window.location.replace("./project.html");
+}
+
+function acquisition() {
+    for (key in localStorage) {
+        if (key === 'length') {break}
+        var updated = products[key];
+        updated.stock -= parseInt(JSON.parse(localStorage[key]).quantity);
+        localStorage.removeItem(key);
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                checkoutRedirect();
+            }
+        }
+        xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, true)
+        xhttp.send(JSON.stringify(updated));
     }
 }
