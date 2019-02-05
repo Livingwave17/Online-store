@@ -18,6 +18,9 @@ function getProducts(x) {
             } else if (x === 'admin') {
                 drawAdminProducts();
             } else if (x === 'cart') {
+                if(Object.keys(localStorage).includes('cart')){
+                    cart = JSON.parse(localStorage['cart'])
+                }
                 getCart()
             }
         }
@@ -71,19 +74,29 @@ function addToCart() {
     var newQuantity = 0
     var inCart = 0;
     var inStock = product.stock;
-    if (Object.keys(localStorage).includes(name)){
-        inCart = JSON.parse(localStorage.getItem(name)).quantity;
-        newQuantity = quantity + inCart;
+    console.log(Object.keys(localStorage).includes('cart'))
+    //console.log(Object.keys(JSON.parse(localStorage['cart'])).includes(name))
+    if(Object.keys(localStorage).includes('cart')){
+        cart = JSON.parse(localStorage['cart'])
+        if (Object.keys(JSON.parse(localStorage['cart'])).includes(name)){
+            inCart = JSON.parse(localStorage.getItem('cart'))[name].quantity
+            newQuantity = quantity + inCart;
+        } else {
+            newQuantity = quantity;
+        }
     } else {
         newQuantity = quantity;
     }
-    var cartItem = JSON.stringify({
+    var cartItem = {
         "name": name,
         "price": price,
         "quantity": newQuantity
-    })
-    if (quantity + inCart < inStock) {
-        localStorage.setItem(name, cartItem);
+    }
+    if (isNaN(quantity) || quantity === 0){
+        return;
+    } else if (quantity + inCart < inStock) {
+        cart[name] = cartItem
+        localStorage.setItem('cart', JSON.stringify(cart));
         document.getElementById("popup").classList.remove("hidden");
         setTimeout(function() {
             document.getElementById("popup").classList.add("hidden");
@@ -101,18 +114,17 @@ function getCart() {
     var total = 0;
     var counter = 0;
     // if (s-a schimbat ceva in database) {updatez localStorage}
-    for (var key in localStorage) {
-        if (key === 'length'){break}
+    for (var key in cart) {
         str += `
         <tr>
-            <td><span>${JSON.parse(localStorage[key]).name}</span></td>
-            <td>${JSON.parse(localStorage[key]).price}</td>
-            <td><button onclick="increase('${key}')">+</button><span>${JSON.parse(localStorage[key]).quantity}</span><button onclick="decrease('${key}')">-</button></td>
-            <td>${JSON.parse(localStorage[key]).price*JSON.parse(localStorage[key]).quantity}</td>
+            <td><span>${cart[key].name}</span></td>
+            <td>${cart[key].price}</td>
+            <td><button onclick="increase('${key}')">+</button><span>${cart[key].quantity}</span><button onclick="decrease('${key}')">-</button></td>
+            <td>${cart[key].price*cart[key].quantity}</td>
             <td><span onclick="remove('${key}')">Remove</span></td>
         </tr>
         `
-        total += parseInt(JSON.parse(localStorage[key]).price*JSON.parse(localStorage[key]).quantity);
+        total += parseInt(cart[key].price)*parseInt(cart[key].quantity);
         counter+= 1;
     }
     document.getElementById("cartBody").innerHTML=str;
@@ -121,38 +133,44 @@ function getCart() {
     //cesese loading undo
     document.getElementById("products").classList.remove("hidden");
     document.getElementById("loading").classList.add("hidden");
-    console.log(total);
 }
 
 function increase(key){
-    if (parseInt(JSON.parse(localStorage[key]).quantity) < parseInt(products[key].stock)) {
-        var quantum = parseInt(JSON.parse(localStorage[key]).quantity);
+    var inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity
+    var inStock = parseInt(products[key].stock);
+    if (inCart < inStock) {
+        var quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity);
         quantum += 1;
         var cartItem = {
-            "name": JSON.parse(localStorage[key]).name,
-            "price": JSON.parse(localStorage[key]).price,
+            "name": JSON.parse(localStorage['cart'])[key].name,
+            "price": JSON.parse(localStorage['cart'])[key].price,
             "quantity": quantum
         }
-        localStorage.setItem(key, JSON.stringify(cartItem));
+        //localStorage.setItem(key, JSON.stringify(cartItem));
+        cart[key] = cartItem
+        localStorage.setItem('cart', JSON.stringify(cart));
         getCart()
     }
 }
 
 function decrease(key){
-    if (parseInt(JSON.parse(localStorage[key]).quantity) > 0) {
-        var quantum = parseInt(JSON.parse(localStorage[key]).quantity) - 1;
+    var inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity
+    if (parseInt(inCart) > 0) {
+        var quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity) - 1;
         var cartItem = {
-            "name": JSON.parse(localStorage[key]).name,
-            "price": JSON.parse(localStorage[key]).price,
+            "name": JSON.parse(localStorage.getItem('cart'))[key].name,
+            "price": JSON.parse(localStorage.getItem('cart'))[key].price,
             "quantity": quantum
         }
-        localStorage.setItem(key, JSON.stringify(cartItem));
+        cart[key] = cartItem
+        localStorage.setItem('cart', JSON.stringify(cart));
         getCart()
     }
 }
 
 function remove(key){
-    localStorage.removeItem(key);
+    delete cart[key];
+    localStorage.setItem('cart', JSON.stringify(cart));
     getCart();
 }
 
@@ -259,7 +277,7 @@ function update(keyEdit) {
 
 function checkout() {
     var buy = confirm("Confirm transaction?");
-    if (buy == true) {
+    if (buy === true) {
         acquisition()
     }
 }
@@ -269,14 +287,13 @@ function checkoutRedirect(){
 }
 
 function acquisition() {
-    for (key in localStorage) {
-        if (key === 'length') {break}
+    for (key in cart) {
         var updated = products[key];
-        updated.stock -= parseInt(JSON.parse(localStorage[key]).quantity);
-        localStorage.removeItem(key);
+        updated.stock -= parseInt(cart[key].quantity);
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
+                localStorage.removeItem('cart')
                 checkoutRedirect();
             }
         }
