@@ -52,6 +52,7 @@ function getDetails() {
     xhttp.onreadystatechange = function() {
         if (this.readyState === 4 && this.status === 200) {
             product = JSON.parse(this.responseText);
+            document.getElementById("addToCartButton").innerHTML = `<button onclick="addToCart('${target}')">Add to Cart</button>`
             drawDetails();
             document.getElementById("details").classList.remove("hidden");
             document.getElementById("loading").classList.add("hidden");
@@ -67,7 +68,7 @@ function drawDetails() {
     document.getElementById("q").max = product.stock;
 }
 
-function addToCart() {
+function addToCart(target) {
     var name = product.name;
     var price = product.price;
     var quantity = parseInt(document.getElementById("q").value);
@@ -78,8 +79,8 @@ function addToCart() {
     //console.log(Object.keys(JSON.parse(localStorage['cart'])).includes(name))
     if(Object.keys(localStorage).includes('cart')){
         cart = JSON.parse(localStorage['cart'])
-        if (Object.keys(JSON.parse(localStorage['cart'])).includes(name)){
-            inCart = JSON.parse(localStorage.getItem('cart'))[name].quantity
+        if (Object.keys(JSON.parse(localStorage['cart'])).includes(target)){
+            inCart = JSON.parse(localStorage.getItem('cart'))[target].quantity
             newQuantity = quantity + inCart;
         } else {
             newQuantity = quantity;
@@ -95,7 +96,7 @@ function addToCart() {
     if (isNaN(quantity) || quantity === 0){
         return;
     } else if (quantity + inCart < inStock) {
-        cart[name] = cartItem
+        cart[target] = cartItem
         localStorage.setItem('cart', JSON.stringify(cart));
         document.getElementById("popup").classList.remove("hidden");
         setTimeout(function() {
@@ -107,14 +108,34 @@ function addToCart() {
             document.getElementById("invalidOrder").classList.add("hidden");
         }, 3000);
     }
+    console.log(cart)
+}
+
+function verifyCart(key) {
+    /*save properties cu Object.keys intr-un array
+        if (cart[key].price !== products[key].price) {
+        iterezi prin array si compari cu ce e in cart
+        daca nu e egal (except quantity) reasign ce e in cos sa fie ca ce e in baza de data
+        pentru quantity make sure sa nu fie mai mare ca stocul
+    }*/
+    var currentProduct = cart[key]
+    if (currentProduct.name !== products[key].name) {
+        currentProduct.name = products[key].name;
+    }
+    if (currentProduct.price !== products[key].price) {
+        currentProduct.price = products[key].price;
+    }
+    if (currentProduct.quantity > products[key].stock) {
+        currentProduct.quantity = products[key].stock
+    }
 }
 
 function getCart() {
     var str = "";
     var total = 0;
     var counter = 0;
-    // if (s-a schimbat ceva in database) {updatez localStorage}
     for (var key in cart) {
+        //verifyCart(key)
         str += `
         <tr>
             <td><span>${cart[key].name}</span></td>
@@ -180,7 +201,7 @@ function drawAdminProducts(){
         str += `
         <tr>
             <td><img width="25" height="25" src='${products[i].image}'></td>
-            <td><span onclick='manage(${JSON.stringify(products[i])})'>${products[i].name}</span></td>
+            <td><span onclick="manage('${i}')">${products[i].name}</span></td>
             <td><span>${products[i].price} $</span></td>
             <td>${products[i].stock}</td>
             <td><span onclick="removeProduct('${i}')">Remove</span></td>
@@ -204,16 +225,17 @@ function removeProduct(i){
     xhttp.send();
 }
 
-function manage(product) {
+function manage(key) {
     document.getElementById('adminTable').classList.add('hidden');
     document.getElementById('manage').classList.remove('hidden');
-    if (product !== 'add') {
+    if (key !== 'add') {
+        var product = products[key]
         getData(product);
-        keyEdit = product.name;
+        keyEdit = key
     } else {
         getData(null);
     }
-    console.log(keyEdit)
+    console.log(product)
 }
 
 function getData(product){
@@ -250,6 +272,7 @@ function update(keyEdit) {
     console.log(JSON.stringify(newProduct))
     
     if (keyEdit === "") {
+        console.log('adding');
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
@@ -258,11 +281,12 @@ function update(keyEdit) {
                 document.getElementById('manage').classList.add('hidden');
             }
         }
-        xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${name}.json`, true)
+        xhttp.open("POST", `https://final-project-d6167.firebaseio.com/.json`, true)
         xhttp.send(JSON.stringify(newProduct));
     } else {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
+        console.log('editing')
+        var xhttp2 = new XMLHttpRequest();
+        xhttp2.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
                 getProducts('admin');
                 document.getElementById('adminTable').classList.remove('hidden');
@@ -270,8 +294,8 @@ function update(keyEdit) {
                 keyEdit = "";
             }
         }
-        xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${keyEdit}.json`, true)
-        xhttp.send(JSON.stringify(newProduct));
+        xhttp2.open("PUT", `https://final-project-d6167.firebaseio.com/${keyEdit}.json`, true)
+        xhttp2.send(JSON.stringify(newProduct));
     }
 }
 
@@ -293,11 +317,12 @@ function acquisition() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                localStorage.removeItem('cart')
-                checkoutRedirect();
+                console.log('done')
             }
         }
         xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, true)
         xhttp.send(JSON.stringify(updated));
     }
+    localStorage.removeItem('cart')
+    //checkoutRedirect();
 }
