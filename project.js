@@ -5,7 +5,7 @@ var keyEdit = "";
 
 function getProducts(x) {
     //localStorage.clear()
-    console.log(x);
+    console.log(keyEdit)
     document.getElementById("products").classList.add("hidden");
     document.getElementById("loading").classList.remove("hidden");
     var xhttp = new XMLHttpRequest();
@@ -135,7 +135,7 @@ function getCart() {
     var total = 0;
     var counter = 0;
     for (var key in cart) {
-        //verifyCart(key)
+        verifyCart(key)
         str += `
         <tr>
             <td><span>${cart[key].name}</span></td>
@@ -207,7 +207,6 @@ function drawAdminProducts(){
             <td><span onclick="removeProduct('${i}')">Remove</span></td>
         </tr>
         `
-        console.log(products[i])
     }
     document.getElementById("productsAdmin").innerHTML = str;
     document.getElementById("products").classList.remove("hidden");
@@ -226,16 +225,18 @@ function removeProduct(i){
 }
 
 function manage(key) {
-    document.getElementById('adminTable').classList.add('hidden');
+    console.log(key);
+    document.getElementById('products').classList.add('hidden');
     document.getElementById('manage').classList.remove('hidden');
     if (key !== 'add') {
         var product = products[key]
         getData(product);
         keyEdit = key
+        console.log(keyEdit)
     } else {
         getData(null);
+        console.log(keyEdit)
     }
-    console.log(product)
 }
 
 function getData(product){
@@ -254,7 +255,8 @@ function getData(product){
     }
 }
 
-function update(keyEdit) {
+function update(action) {
+    console.log(keyEdit)
     var image = document.getElementById('manageImage').value;
     var name = document.getElementById('manageName').value;
     var description = document.getElementById('manageDescription').value;
@@ -268,16 +270,18 @@ function update(keyEdit) {
         "price":price,
         "stock":stock
     }
-    console.log(newProduct)
-    console.log(JSON.stringify(newProduct))
     
-    if (keyEdit === "") {
+    if (action === 'cancel') {
+        console.log('canceled')
+        document.getElementById('products').classList.remove('hidden');
+        document.getElementById('manage').classList.add('hidden');
+    } else if (keyEdit === ''){
         console.log('adding');
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
                 getProducts('admin');
-                document.getElementById('adminTable').classList.remove('hidden');
+                document.getElementById('products').classList.remove('hidden');
                 document.getElementById('manage').classList.add('hidden');
             }
         }
@@ -289,7 +293,7 @@ function update(keyEdit) {
         xhttp2.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
                 getProducts('admin');
-                document.getElementById('adminTable').classList.remove('hidden');
+                document.getElementById('products').classList.remove('hidden');
                 document.getElementById('manage').classList.add('hidden');
                 keyEdit = "";
             }

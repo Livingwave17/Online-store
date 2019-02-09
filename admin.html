@@ -28,50 +28,50 @@
                     
                 </tbody>
             </table>
-            <table id="manage" class="hidden">
-                <thead>
-                    <tr>
-                        <td><span id="action"></span></td>
-                        <td>
-                            <button onclick="update(keyEdit)">+ Save</button>
-                            <button onclick="update(keyEdit)">Cancel</button>
-                        </td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span>Image</span></td>
-                        <td>
-                            <input type='text' id="manageImage">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span>Name</span></td>
-                        <td>
-                            <input type='text' id="manageName">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span>Description</span></td>
-                        <td>
-                            <textarea id="manageDescription"></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span>Price</span></td>
-                        <td>
-                            <input type='number' id="managePrice" min="0">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><span>Stock</span></td>
-                        <td>
-                            <input type="number" id="manageStock" min="0">
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
+    <table id="manage" class="hidden">
+        <thead>
+            <tr>
+                <td><span id="action"></span></td>
+                <td>
+                    <button onclick="update('save')">+ Save</button>
+                    <button onclick="update('cancel')">Cancel</button>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span>Image</span></td>
+                <td>
+                    <input type='text' id="manageImage">
+                </td>
+            </tr>
+            <tr>
+                <td><span>Name</span></td>
+                <td>
+                    <input type='text' id="manageName">
+                </td>
+            </tr>
+            <tr>
+                <td><span>Description</span></td>
+                <td>
+                    <textarea id="manageDescription"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td><span>Price</span></td>
+                <td>
+                    <input type='number' id="managePrice" min="0">
+                </td>
+            </tr>
+            <tr>
+                <td><span>Stock</span></td>
+                <td>
+                    <input type="number" id="manageStock" min="0">
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
