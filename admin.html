@@ -10,18 +10,18 @@
         <img id="loading-image" src="https://cdn.dribbble.com/users/493970/screenshots/1691794/progress.gif">
     </div>
     <div id="products" class="hidden">
-        <div>
-            <a href="./cart.html"><button>Shopping Cart</button></a>
-            <div>
-                <span>Manage Products</span>
+        <div class="content">
+            <div class="head-menu content">
+                <span class="headlines headElement">Prognosis Records</span>
+                <a href="./project.html" class="headElement"><button>Home</button></a>
                 <button onclick="manage('add')">+ Add new product</button>
             </div>
-            <table border="1" id="adminTable">
+            <table border="1" id="adminTable" class="center">
                 <thead>
-                    <td>Imagine</td>
-                    <td>Nume</td>
-                    <td>Pret</td>
-                    <td>Cantitate</td>
+                    <td><span>Imagine</span></td>
+                    <td><span>Nume</span></td>
+                    <td><span>Pret</span></td>
+                    <td><span>Cantitate</span></td>
                     <td></td>
                 </thead>
                 <tbody id="productsAdmin">
@@ -30,12 +30,13 @@
             </table>
         </div>
     </div>
-    <table id="manage" class="hidden">
+    <table border="1" id="manage" class="hidden center">
         <thead>
             <tr>
-                <td><span id="action"></span></td>
                 <td>
                     <button onclick="update('save')">+ Save</button>
+                </td>
+                <td>
                     <button onclick="update('cancel')">Cancel</button>
                 </td>
             </tr>

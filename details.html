@@ -12,18 +12,37 @@
         <div id="loading">
             <img id="loading-image" src="https://cdn.dribbble.com/users/493970/screenshots/1691794/progress.gif">
         </div>
-        <span id="popup" class="hidden">Added to cart</span>
         <div id="details" class="content">
-            <a href="./cart.html"><button>Shopping Cart</button></a>
+            <div class="head-menu">
+                <a href="./project.html" class="headElement"><button>Home</button></a>
+                <a href="./cart.html" class="headElement"><button>Shopping Cart</button></a>
+                <a href="./admin.html" class="headElement"><button>Admin</button></a>
+            </div>
             <div class="col-sm-12 col-md-6 inline-block">
                 <img id="detail-image" src=''>
             </div>
             <div class="col-sm-12 col-md-6 inline-block" id="detail-text">
-                <span id="detail-name"></span><br>
-                <span id="detail-price"></span><br>
-                <span id="detail-price">Cantitate: <input id="q" type="number" value="" max="" min="0"></span>
-                <span id="addToCartButton"></span>
-                <span id="invalidOrder" class="hidden">Insuficient stock</span>
+                <table>
+                    <tr>
+                        <td><span id="detail-name" class="headlines"></span><br></td>
+                    </tr>
+                    <tr>
+                        <td><span id="detail-description"></span><br></td>
+                    </tr>
+                    <tr>
+                        <td><span id="detail-price"></span><br></td>
+                    </tr>
+                    <tr>
+                        <td><span id="detail-price">Cantitate: <input id="q" type="number" value="" max="" min="0"></span></td>
+                    </tr>
+                    <tr>
+                        <td><span id="addToCartButton"></span></td>
+                    </tr>
+                    <tr>
+                        <td><span id="invalidOrder" class="hidden">Insuficient stock</span></td>
+                    </tr>
+                </table>
+                <span id="popup" class="hidden">Added to cart</span>
             </div>
         </div>
     </div>

@@ -12,16 +12,34 @@
     <div id="loading">
         <img id="loading-image" src="https://cdn.dribbble.com/users/493970/screenshots/1691794/progress.gif">
     </div>
-    <div id="products" class="hidden">
-        <div>
-            <table>
-                <tr>
-                    <td><span></span></td>
-                    <td><a href="./cart.html"><button>Shopping Cart</button></a></td>
-                    <td><a href="./admin.html"><button>Admin</button></a></td>
-                </tr>
-            </table>
+    <!--Carusel-->
+    <div id="carousel" class="invisible">
+        <div class="siema">
+            <div class="carousel-slide" id="slide1"></div>
+            <div class="carousel-slide" id="slide2"></div>
+            <div class="carousel-slide" id="slide3"></div>
+            <div class="carousel-slide" id="slide4"></div>
+            <div class="carousel-slide" id="slide5"></div>
         </div>
+        <button class="prev hidden">prev</button>
+        <button class="next hidden">next</button>
+        <script src="siema.min.js"></script>
+        <script>
+        const mySiema = new Siema({
+            loop: true,
+            duration: 1000
+        });
+            document.querySelector('.prev').addEventListener('click', () => mySiema.prev())
+            document.querySelector('.next').addEventListener('click', () => mySiema.next())
+        </script>
+    </div>
+    <!--Carusel-->
+    <div id="products" class="hidden">
+            <div class="head-menu content">
+                <span class="headlines headElement">Prognosis Records</span>
+                <a href="./cart.html" class="headElement"><button>Shopping Cart</button></a>
+                <a href="./admin.html" class="headElement"><button>Admin</button></a>
+            </div>
         <div class="content" id="grid">
 
         </div>

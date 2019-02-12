@@ -5,7 +5,6 @@ var keyEdit = "";
 
 function getProducts(x) {
     //localStorage.clear()
-    console.log(keyEdit)
     document.getElementById("products").classList.add("hidden");
     document.getElementById("loading").classList.remove("hidden");
     var xhttp = new XMLHttpRequest();
@@ -15,19 +14,35 @@ function getProducts(x) {
             if (x === 'main'){
                 // undo la clasele CSS a plecat in functiile drawProducts si drawAdminProducts si getCart (facem ajax si in cart ca sa vada products)
                 drawProducts();
+                document.getElementById("carousel").classList.remove("invisible");
+                slideShow()
             } else if (x === 'admin') {
                 drawAdminProducts();
             } else if (x === 'cart') {
                 if(Object.keys(localStorage).includes('cart')){
                     cart = JSON.parse(localStorage['cart'])
                 }
-                getCart()
+                if (isEmpty(cart)){
+                    document.getElementById("loading").classList.add("hidden");
+                    document.getElementById('cartTable').classList.add("hidden")
+                    document.getElementById('products').classList.remove("hidden")
+                    document.getElementById("emptyCart").classList.remove('hidden')
+                } else {
+                    document.getElementById('emptyCart').classList.add('hidden');
+                    document.getElementById('cartTable').classList.remove("hidden")
+                    getCart()
+                }
             }
         }
     }
     xhttp.open("GET", "https://final-project-d6167.firebaseio.com/.json", true)
     xhttp.send();
 }
+
+function slideShow() {
+    setInterval(() => mySiema.next(), 6000)
+}
+
 function drawProducts() {
     var str = "";
     for (var i in products) {
@@ -64,7 +79,8 @@ function getDetails() {
 function drawDetails() {
     document.getElementById("detail-image").src = product.image;
     document.getElementById("detail-name").innerHTML = product.name;
-    document.getElementById("detail-price").innerHTML = product.price;
+    document.getElementById("detail-description").innerHTML = product.description;
+    document.getElementById("detail-price").innerHTML = product.price + ' $';
     document.getElementById("q").max = product.stock;
 }
 
@@ -130,18 +146,26 @@ function verifyCart(key) {
     }
 }
 
+function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key)) {
+            return false;
+        } 
+    }
+    return true;
+}
+
 function getCart() {
     var str = "";
     var total = 0;
     var counter = 0;
     for (var key in cart) {
-        verifyCart(key)
         str += `
         <tr>
             <td><span>${cart[key].name}</span></td>
-            <td>${cart[key].price}</td>
+            <td><span>${cart[key].price}</span></td>
             <td><button onclick="increase('${key}')">+</button><span>${cart[key].quantity}</span><button onclick="decrease('${key}')">-</button></td>
-            <td>${cart[key].price*cart[key].quantity}</td>
+            <td><span>${cart[key].price*cart[key].quantity}</span></td>
             <td><span onclick="remove('${key}')">Remove</span></td>
         </tr>
         `
@@ -176,7 +200,7 @@ function increase(key){
 
 function decrease(key){
     var inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity
-    if (parseInt(inCart) > 0) {
+    if (parseInt(inCart) > 1) {
         var quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity) - 1;
         var cartItem = {
             "name": JSON.parse(localStorage.getItem('cart'))[key].name,
@@ -193,6 +217,7 @@ function remove(key){
     delete cart[key];
     localStorage.setItem('cart', JSON.stringify(cart));
     getCart();
+    console.log(cart)
 }
 
 function drawAdminProducts(){
@@ -203,7 +228,7 @@ function drawAdminProducts(){
             <td><img width="25" height="25" src='${products[i].image}'></td>
             <td><span onclick="manage('${i}')">${products[i].name}</span></td>
             <td><span>${products[i].price} $</span></td>
-            <td>${products[i].stock}</td>
+            <td><span>${products[i].stock}</span></td>
             <td><span onclick="removeProduct('${i}')">Remove</span></td>
         </tr>
         `
@@ -214,14 +239,17 @@ function drawAdminProducts(){
 }
 
 function removeProduct(i){
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            getProducts('admin');
+    var confirmDelete = confirm("Confirm Delete?");
+    if (confirmDelete === true) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                getProducts('admin');
+            }
         }
-    }
-    xhttp.open("DELETE", `https://final-project-d6167.firebaseio.com/${i}.json`, true)
-    xhttp.send();
+        xhttp.open("DELETE", `https://final-project-d6167.firebaseio.com/${i}.json`, true)
+        xhttp.send();
+    } 
 }
 
 function manage(key) {
@@ -275,6 +303,7 @@ function update(action) {
         console.log('canceled')
         document.getElementById('products').classList.remove('hidden');
         document.getElementById('manage').classList.add('hidden');
+        keyEdit = '';
     } else if (keyEdit === ''){
         console.log('adding');
         var xhttp = new XMLHttpRequest();
@@ -304,29 +333,58 @@ function update(action) {
 }
 
 function checkout() {
-    var buy = confirm("Confirm transaction?");
-    if (buy === true) {
-        acquisition()
+    if (!isEmpty(cart)){
+        var buy = confirm("Confirm transaction?");
+        if (buy === true) {
+            acquisition();
+        }
     }
 }
 
 function checkoutRedirect(){
-    window.location.replace("./project.html");
+    document.getElementById('transaction').classList.add('hidden');
+    document.getElementById('products').classList.remove('hidden');
+    getCart()
 }
+
 
 function acquisition() {
     for (key in cart) {
         var updated = products[key];
         updated.stock -= parseInt(cart[key].quantity);
+        delete cart[key]
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                console.log('done')
+                if (isEmpty(cart)){
+                    localStorage.removeItem('cart');
+                    document.getElementById('products').classList.add('hidden');
+                    document.getElementById('transaction').classList.remove('hidden');
+                }
             }
         }
         xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, true)
         xhttp.send(JSON.stringify(updated));
     }
-    localStorage.removeItem('cart')
-    //checkoutRedirect();
 }
+
+/*function acquisition() {
+    return new Promise(function(resolve, reject){
+        for (key in cart) {
+            var updated = products[key];
+            updated.stock -= parseInt(cart[key].quantity);
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    delete cart[key]
+                    console.log('done')
+                    console.log(cart)
+                    console.log(isEmpty(cart))
+                }
+            }
+            xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, true)
+            xhttp.send(JSON.stringify(updated));
+        }
+        resolve;
+    })
+}*/
