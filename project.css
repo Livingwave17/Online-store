@@ -83,6 +83,22 @@ button{
 span {
     font-family: Arial, Helvetica, sans-serif;
 }
+#log_in {
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+#log_out {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+#accessories {
+    width: 15%;
+}
+#gridcontainer {
+    width: 85%;
+}
 #detail-image{
     width: 300px;
     height: 300px;
@@ -99,6 +115,9 @@ span {
 .cartElement{
     padding-top: 20px;
     padding-bottom: 20px;
+}
+#log_in_cart{
+    text-align: center;
 }
 #transaction{
     text-align: center;

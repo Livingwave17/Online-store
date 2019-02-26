@@ -35,13 +35,54 @@
     </div>
     <!--Carusel-->
     <div id="products" class="hidden">
-            <div class="head-menu content">
-                <span class="headlines headElement">Prognosis Records</span>
-                <a href="./cart.html" class="headElement"><button>Shopping Cart</button></a>
-                <a href="./admin.html" class="headElement"><button>Admin</button></a>
-            </div>
-        <div class="content" id="grid">
+        <div id="log_out" class="hidden">
+            <button onclick="log_out()">Log Out</button>
+        </div>
 
+
+        <div class="head-menu content">
+            <span class="headlines headElement">Prognosis Records</span>
+            <a href="./cart.html" class="headElement"><button>Shopping Cart</button></a>
+            <a href="./admin.html" class="headElement hidden" id="adminButton"><button>Admin</button></a>
+        </div>
+        <div>
+            <table>
+                <tr>
+                    <td valign="top" id="accessories">
+                        <div id="log_in">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <span>Username: </span>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="username">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span>Password: </span>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="password"><br>
+                                        <span class="hidden" id="invalidLogin">Invalid Login</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button onclick="log_in()">Log in</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td id="gridcontainer">
+                        <div id="grid">
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
         

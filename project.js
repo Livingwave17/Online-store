@@ -2,45 +2,131 @@ var products;
 var cart = {};
 var product;
 var keyEdit = "";
-
-function getProducts(x) {
-    //localStorage.clear()
-    document.getElementById("products").classList.add("hidden");
-    document.getElementById("loading").classList.remove("hidden");
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            products = JSON.parse(this.responseText);
-            if (x === 'main'){
-                // undo la clasele CSS a plecat in functiile drawProducts si drawAdminProducts si getCart (facem ajax si in cart ca sa vada products)
-                drawProducts();
-                document.getElementById("carousel").classList.remove("invisible");
-                slideShow()
-            } else if (x === 'admin') {
-                drawAdminProducts();
-            } else if (x === 'cart') {
-                if(Object.keys(localStorage).includes('cart')){
-                    cart = JSON.parse(localStorage['cart'])
-                }
-                if (isEmpty(cart)){
-                    document.getElementById("loading").classList.add("hidden");
-                    document.getElementById('cartTable').classList.add("hidden")
-                    document.getElementById('products').classList.remove("hidden")
-                    document.getElementById("emptyCart").classList.remove('hidden')
-                } else {
-                    document.getElementById('emptyCart').classList.add('hidden');
-                    document.getElementById('cartTable').classList.remove("hidden")
-                    getCart()
-                }
-            }
-        }
-    }
-    xhttp.open("GET", "https://final-project-d6167.firebaseio.com/.json", true)
-    xhttp.send();
-}
+var accounts = {}
+var currentAccount = {};
 
 function slideShow() {
     setInterval(() => mySiema.next(), 6000)
+}
+
+function ajax(method, url, body){
+    return new Promise(function(resolve, reject){
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4){
+                if(this.status === 200) {
+                    resolve(this.responseText)
+                } else {
+                    reject(new Error("Error"));
+                }
+            }
+        };
+        xhttp.open(method, url, true);
+        xhttp.send(body);
+    });
+}
+
+async function log_in() {
+    var username = document.getElementById("username").value
+    var password = document.getElementById("password").value
+    var response = await ajax("GET", "https://final-project-accounts.firebaseio.com/.json");
+    accounts = Object.values(JSON.parse(response));
+    for (i in accounts) {
+        if (accounts[i].user === username){
+            if (accounts[i].pass === password) {
+                currentAccount = accounts[i];
+                localStorage.setItem('logged_in', true);
+                localStorage.setItem('account', JSON.stringify(currentAccount));
+                window.location.reload()
+                return;
+            }
+        }
+    }
+    document.getElementById('invalidLogin').classList.remove('hidden');
+    setTimeout(function() {
+        document.getElementById("invalidLogin").classList.add("hidden");
+    }, 3000);
+}
+
+function adminAccess() {
+    console.log(JSON.parse(localStorage.getItem("account")));
+    if (localStorage.getItem("account") === null){
+        return
+    } else {
+        var myAccount = JSON.parse(localStorage.getItem("account"))
+        console.log(myAccount.role)
+        if(myAccount.role === 'admin'){
+            document.getElementById('adminButton').classList.remove('hidden')
+        } else {
+            document.getElementById('adminButton').classList.add('hidden')
+        }
+    }
+}
+
+function log_in_visibility() {
+    console.log(localStorage.getItem('logged_in') !== null)
+    console.log(localStorage.getItem('logged_in'))
+    if (localStorage.getItem('logged_in') !== null) {
+        if (localStorage.getItem('logged_in')){
+            document.getElementById('log_in').classList.add("hidden");
+        }else{
+            document.getElementById('log_in').classList.add("hidden");
+        }
+    }
+}
+
+function logged_in(){
+    if (localStorage.getItem('logged_in')){
+        document.getElementById('log_out').classList.remove('hidden')
+    } else {
+        document.getElementById('log_out').classList.add('hidden')
+        //document.getElementById('log_in').classList.remove("hidden")
+    }
+}
+
+function log_out(){
+    localStorage.removeItem('logged_in');
+    localStorage.removeItem('account');
+    //document.getElementById('adminButton').classList.add('hidden');
+    currentAccount = {}
+    window.location.replace("./project.html");
+}
+
+async function getProducts(x) {
+    //localStorage.clear()
+    console.log(localStorage)
+    console.log(window.location.href)
+    logged_in()
+    document.getElementById("products").classList.add("hidden");
+    document.getElementById("loading").classList.remove("hidden");
+    var response = await ajax("get","https://final-project-d6167.firebaseio.com/.json");
+    products = JSON.parse(response);
+    if (x === 'main'){
+        // undo la clasele CSS a plecat in functiile drawProducts si drawAdminProducts si getCart (facem ajax si in cart ca sa vada products)
+        adminAccess()
+        log_in_visibility()
+        drawProducts();
+        document.getElementById("carousel").classList.remove("invisible");
+        slideShow()
+    } else if (x === 'admin') {
+        drawAdminProducts();
+    } else if (x === 'cart') {
+        adminAccess()
+        if(Object.keys(localStorage).includes('cart')){
+            cart = JSON.parse(localStorage['cart'])
+        }
+        if (isEmpty(cart)){
+            document.getElementById("loading").classList.add("hidden");
+            document.getElementById('cartTable').classList.add("hidden")
+            document.getElementById('products').classList.remove("hidden")
+            document.getElementById("emptyCart").classList.remove('hidden')
+        } else {
+            document.getElementById('emptyCart').classList.add('hidden');
+            document.getElementById('cartTable').classList.remove("hidden")
+            getCart()
+        }
+    }
+    //logged_in()
 }
 
 function drawProducts() {
@@ -59,23 +145,20 @@ function drawProducts() {
     document.getElementById("loading").classList.add("hidden");
 }
 
-function getDetails() {
+async function getDetails() {
+    logged_in()
+    adminAccess()
     var target = location.search.substring(4);
-    var xhttp = new XMLHttpRequest();
     document.getElementById("details").classList.add("hidden");
     document.getElementById("loading").classList.remove("hidden");
-    xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            product = JSON.parse(this.responseText);
-            document.getElementById("addToCartButton").innerHTML = `<button onclick="addToCart('${target}')">Add to Cart</button>`
-            drawDetails();
-            document.getElementById("details").classList.remove("hidden");
-            document.getElementById("loading").classList.add("hidden");
-        }
-    }
-    xhttp.open("GET", `https://final-project-d6167.firebaseio.com/${target}.json`, true)
-    xhttp.send();
+    var response = await ajax("GET", `https://final-project-d6167.firebaseio.com/${target}.json`);
+    product = JSON.parse(response);
+    document.getElementById("addToCartButton").innerHTML = `<button onclick="addToCart('${target}')">Add to Cart</button>`
+    drawDetails();
+    document.getElementById("details").classList.remove("hidden");
+    document.getElementById("loading").classList.add("hidden");
 }
+
 function drawDetails() {
     document.getElementById("detail-image").src = product.image;
     document.getElementById("detail-name").innerHTML = product.name;
@@ -238,18 +321,12 @@ function drawAdminProducts(){
     document.getElementById("loading").classList.add("hidden");
 }
 
-function removeProduct(i){
+async function removeProduct(i){
     var confirmDelete = confirm("Confirm Delete?");
     if (confirmDelete === true) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                getProducts('admin');
-            }
-        }
-        xhttp.open("DELETE", `https://final-project-d6167.firebaseio.com/${i}.json`, true)
-        xhttp.send();
-    } 
+        await ajax("DELETE", `https://final-project-d6167.firebaseio.com/${i}.json`, true)
+        getProducts('admin');
+    }
 }
 
 function manage(key) {
@@ -283,7 +360,7 @@ function getData(product){
     }
 }
 
-function update(action) {
+async function update(action) {
     console.log(keyEdit)
     var image = document.getElementById('manageImage').value;
     var name = document.getElementById('manageName').value;
@@ -306,66 +383,87 @@ function update(action) {
         keyEdit = '';
     } else if (keyEdit === ''){
         console.log('adding');
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                getProducts('admin');
-                document.getElementById('products').classList.remove('hidden');
-                document.getElementById('manage').classList.add('hidden');
-            }
-        }
-        xhttp.open("POST", `https://final-project-d6167.firebaseio.com/.json`, true)
-        xhttp.send(JSON.stringify(newProduct));
+        await ajax("POST", `https://final-project-d6167.firebaseio.com/.json`, JSON.stringify(newProduct));
+        getProducts('admin');
+        document.getElementById('manage').classList.add('hidden');
     } else {
-        console.log('editing')
-        var xhttp2 = new XMLHttpRequest();
-        xhttp2.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                getProducts('admin');
-                document.getElementById('products').classList.remove('hidden');
-                document.getElementById('manage').classList.add('hidden');
-                keyEdit = "";
-            }
-        }
-        xhttp2.open("PUT", `https://final-project-d6167.firebaseio.com/${keyEdit}.json`, true)
-        xhttp2.send(JSON.stringify(newProduct));
+        console.log('editing')        
+        await ajax("PUT", `https://final-project-d6167.firebaseio.com/${keyEdit}.json`, JSON.stringify(newProduct));
+        getProducts('admin');
+        document.getElementById('products').classList.remove('hidden');
+        document.getElementById('manage').classList.add('hidden');
+        keyEdit = "";
     }
 }
 
 function checkout() {
-    if (!isEmpty(cart)){
-        var buy = confirm("Confirm transaction?");
-        if (buy === true) {
-            acquisition();
+    console.log(localStorage.getItem("logged_in"))
+    if (localStorage.getItem("logged_in")) {
+        if (!isEmpty(cart)){
+            var buy = confirm("Confirm transaction?");
+            if (buy === true) {
+                acquisition();
+            }
+        }
+    } else {
+        if (!isEmpty(cart)){
+            document.getElementById("log_in_cart").classList.remove("hidden");
         }
     }
 }
 
-function checkoutRedirect(){
+function hide_log_in(){
+    document.getElementById("log_in_cart").classList.add("hidden");
+}
+
+/*function checkoutRedirect(){
     document.getElementById('transaction').classList.add('hidden');
     document.getElementById('products').classList.remove('hidden');
     getCart()
-}
+}*/
 
-
-function acquisition() {
+/*async function acquisition() {
     for (key in cart) {
         var updated = products[key];
         updated.stock -= parseInt(cart[key].quantity);
         delete cart[key]
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                if (isEmpty(cart)){
-                    localStorage.removeItem('cart');
-                    document.getElementById('products').classList.add('hidden');
-                    document.getElementById('transaction').classList.remove('hidden');
-                }
-            }
+        await ajax("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
+        console.log(mypromise)
+        if (isEmpty(cart)){
+            localStorage.removeItem('cart');
+            document.getElementById('products').classList.add('hidden');
+            document.getElementById('transaction').classList.remove('hidden');
         }
-        xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, true)
-        xhttp.send(JSON.stringify(updated));
     }
+}*/
+
+function transaction(){
+    document.getElementById('processing').classList.add('hidden');
+    document.getElementById('products').classList.add('hidden');
+    document.getElementById('log_out').classList.add('hidden');
+    document.getElementById('transaction').classList.remove('hidden');
+}
+
+function checkoutRedirect(){
+    window.location.replace("./project.html");
+}
+
+async function acquisition() {
+    document.getElementById('processing').classList.remove('hidden')
+    var ajaxes = [];
+    for (key in cart) {
+        var updated = products[key];
+        updated.stock -= parseInt(cart[key].quantity);
+        delete cart[key]
+        console.log(cart)
+        var mypromise = await ajax("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
+        ajaxes.push(mypromise);
+        if (isEmpty(cart)){
+            localStorage.removeItem('cart');;
+        }
+    }
+    await Promise.all(ajaxes);
+    transaction()
 }
 
 /*function acquisition() {

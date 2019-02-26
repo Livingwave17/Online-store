@@ -8,6 +8,9 @@
     <script type="text/javascript" src="project.js"></script>
 </head>
 <body onload="getProducts('cart')">
+    <div id="log_out">
+        <button onclick="log_out()">Log Out</button>
+    </div>
     <div id="loading" class="hidden">
         <img id="loading-image" src="https://cdn.dribbble.com/users/493970/screenshots/1691794/progress.gif">
     </div>
@@ -15,7 +18,7 @@
         <div id="cart" class="content center">
             <div class="head-menu cartElement">
                 <a href="./project.html" class="headElement"><button>Home</button></a>
-                <a href="./admin.html" class="headElement"><button>Admin</button></a>
+                <a href="./admin.html" class="headElement" id="adminButton"><button>Admin</button></a>
             </div>
             <span class="center cartElement">Shopping Cart</span><br><br>
             <span id="emptyCart">Your shopping cart is empty</span>
@@ -40,6 +43,44 @@
             </div>
         </div>
     </div>
+
+    <div id="log_in_cart" class="hidden content">
+        <table>
+            <tr>
+                <td colspan="2"><span>You must be logged in to finish your order</span></td>
+            </tr>
+            <tr>
+                <td>
+                    <span>Username: </span>
+                </td>
+                <td>
+                    <input type="text" id="username">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>Password: </span>
+                </td>
+                <td>
+                    <input type="text" id="password"><br>
+                    <span class="hidden" id="invalidLogin">Invalid Login</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button onclick="log_in()">Log in</button>
+                </td>
+                <td>
+                        <button onclick="hide_log_in()">Cancel</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="processing" class="hidden content center">
+        <span>Processing...</span>
+    </div>
+
     <div id="transaction" class="hidden content center">
         <span>Your transaction is complete!</span><br>
         <button onclick="checkoutRedirect()">OK</button>

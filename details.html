@@ -9,6 +9,9 @@
 </head>
 <body onload="getDetails()">
     <div class="content" id="details-content">
+            <div id="log_out">
+                    <button onclick="log_out()">Log Out</button>
+                </div>
         <div id="loading">
             <img id="loading-image" src="https://cdn.dribbble.com/users/493970/screenshots/1691794/progress.gif">
         </div>
@@ -16,7 +19,7 @@
             <div class="head-menu">
                 <a href="./project.html" class="headElement"><button>Home</button></a>
                 <a href="./cart.html" class="headElement"><button>Shopping Cart</button></a>
-                <a href="./admin.html" class="headElement"><button>Admin</button></a>
+                <a href="./admin.html" class="headElement" id="adminButton"><button>Admin</button></a>
             </div>
             <div class="col-sm-12 col-md-6 inline-block">
                 <img id="detail-image" src=''>
