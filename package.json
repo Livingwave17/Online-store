@@ -1,0 +1,26 @@
+{
+  "name": "online-store",
+  "version": "1.0.0",
+  "description": "",
+  "main": "project.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^5.14.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0"
+  },
+  "scripts": {
+    "lint": "eslint ./",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Livingwave17/Online-store.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Livingwave17/Online-store/issues"
+  },
+  "homepage": "https://github.com/Livingwave17/Online-store#readme"
+}
