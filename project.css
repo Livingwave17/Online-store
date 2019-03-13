@@ -83,21 +83,44 @@ button{
 span {
     font-family: Arial, Helvetica, sans-serif;
 }
-#log_in {
-    padding: 10px;
+.settings {
     border: 1px solid black;
-    border-radius: 10px;
+    border-radius: 5px;
+    padding: 10px;
+    float: left;
+    height: 100px;
 }
 #log_out {
     position: absolute;
     right: 10px;
     top: 10px;
 }
+.filterbox{
+    vertical-align: middle;
+    position: absolute;
+    bottom: 300px;
+    z-index: 2;
+    border: 1px solid black;
+    background-color: silver;
+    border-radius: 3px; 
+    height: 80px;
+}
+.filter-tab{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    padding: 0 10px;
+}
+#settingsBar {
+    display: block;
+    width: 95%;
+    margin: 10px auto;
+}
 #accessories {
     width: 15%;
 }
 #gridcontainer {
     width: 85%;
+    margin: auto;
 }
 #detail-image{
     width: 300px;
@@ -135,4 +158,6 @@ span {
 #manage {
     margin: auto;
     width: 40%;
+}
+#grid {
 }

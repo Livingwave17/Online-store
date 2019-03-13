@@ -7,6 +7,9 @@
 }
 
 /*<editor-fold desc="Extra Small Screen .col-xs-">*/
+.row-xs-12{
+	height: 301px;
+}
 .col-xs-12 {
 	width: 100%;
 }
@@ -48,6 +51,9 @@
 
 /*<editor-fold desc="Small Screen .col-sm- min-width: 768px">*/
 @media (min-width: 768px) {
+	.row-sm-12{
+		height: 301px;
+	}
 	.col-sm-12 {
 		width: 100%;
 	}
@@ -89,6 +95,9 @@
 
 /*<editor-fold desc="Medium Screen .col-md- min-width: 992px">*/
 @media (min-width: 992px) {
+	.row-md-6{
+		height: 201px;
+	}
 	.col-md-12 {
 		width: 100%;
 	}
@@ -130,6 +139,9 @@
 
 /*<editor-fold desc="Large Screen .col-lg- min-width: 1200px">*/
 @media (min-width: 1200px) {
+	.row-lg-4{
+		height: 101px;
+	}
 	.col-lg-12 {
 		width: 100%;
 	}

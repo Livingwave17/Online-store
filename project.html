@@ -45,44 +45,91 @@
             <a href="./cart.html" class="headElement"><button>Shopping Cart</button></a>
             <a href="./admin.html" class="headElement hidden" id="adminButton"><button>Admin</button></a>
         </div>
-        <div>
-            <table>
-                <tr>
-                    <td valign="top" id="accessories">
-                        <div id="log_in">
-                            <table>
+        <div id="settingsBar" class="row-xs-12 row-sm-12 row-md-6 row-lg-4">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 settings">
+                <table id="log_in">
+                    <tr>
+                        <td>
+                            <span>Username: </span>
+                        </td>
+                        <td>
+                            <input type="text" id="username">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span>Password: </span>
+                        </td>
+                        <td>
+                            <input type="text" id="password"><br>
+                            <span class="hidden" id="invalidLogin">Invalid Login</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button onclick="log_in()">Log in</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 settings">
+                <span>Filters</span>
+                <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td><button><span onclick="showFilters('byGenre','byYear','byPrice')">by genre</span></button></td>
+                                    <td><button><span onclick="showFilters('byYear','byPrice','byGenre')">by year</span></button></td>
+                                    <td><button><span onclick="showFilters('byPrice','byGenre','byYear')">by price</span></button></td>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 <tr>
                                     <td>
-                                        <span>Username: </span>
+                                        <div class="filterbox hidden" id="byGenre">
+                                            <input name="filter" type="checkbox" value="Progressive Metal">Progressive Metal<br>
+                                            <input name="filter" type="checkbox" value="Progressive Rock">Progressive Rock<br>
+                                            <input name="filter" type="checkbox" value="Instrumental">Instrumental<br>
+                                            <input name="filter" type="checkbox" value="Other">Other<br>
+                                        </div>
                                     </td>
                                     <td>
-                                        <input type="text" id="username">
+                                        <div class="filterbox hidden" id="byYear">
+                                            <input name="filter" type="checkbox" value="1980">80'-90'<br>
+                                            <input name="filter" type="checkbox" value="1990">90'-00'<br>
+                                            <input name="filter" type="checkbox" value="2000">00'-10'<br>
+                                            <input name="filter" type="checkbox" value="2010">10'-19'<br>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="filterbox hidden" id="byPrice">
+                                            <input name="filter" type="checkbox" value="0">0-10 $<br>
+                                            <input name="filter" type="checkbox" value="10">10-20 $<br>
+                                            <input name="filter" type="checkbox" value="20">20 + $<br>
+                                        </div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <span>Password: </span>
-                                    </td>
-                                    <td>
-                                        <input type="text" id="password"><br>
-                                        <span class="hidden" id="invalidLogin">Invalid Login</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <button onclick="log_in()">Log in</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </td>
-                    <td id="gridcontainer">
-                        <div id="grid">
+                            </tbody>
+                        </table>
+                        <button onclick="filter()">Filter</button>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 settings">
+                <span>Order by: </span>
+                <select id="sort">
+                    <option value="n/a">n/a</option>
+                    <option value="A-Z">A-Z</option>
+                    <option value="Z-A">Z-A</option>
+                    <option value="asc">Price low to high</option>
+                    <option value="desc">Price high to low</option>
+                </select><br>
+                <button onclick="sortProducts()">Apply</button>
+            </div>
+        </div>
+        <div id="gridcontainer">
+            <div id="grid">
 
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            </div>
         </div>
     </div>
         

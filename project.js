@@ -1,4 +1,6 @@
 var products;
+var productsArray
+var filteredProducts = {};
 var cart = {};
 var product;
 var keyEdit = "";
@@ -49,12 +51,11 @@ async function log_in() {
 }
 
 function adminAccess() {
-    console.log(JSON.parse(localStorage.getItem("account")));
     if (localStorage.getItem("account") === null){
+        document.getElementById('adminButton').classList.add('hidden')
         return
     } else {
         var myAccount = JSON.parse(localStorage.getItem("account"))
-        console.log(myAccount.role)
         if(myAccount.role === 'admin'){
             document.getElementById('adminButton').classList.remove('hidden')
         } else {
@@ -64,8 +65,6 @@ function adminAccess() {
 }
 
 function log_in_visibility() {
-    console.log(localStorage.getItem('logged_in') !== null)
-    console.log(localStorage.getItem('logged_in'))
     if (localStorage.getItem('logged_in') !== null) {
         if (localStorage.getItem('logged_in')){
             document.getElementById('log_in').classList.add("hidden");
@@ -80,32 +79,167 @@ function logged_in(){
         document.getElementById('log_out').classList.remove('hidden')
     } else {
         document.getElementById('log_out').classList.add('hidden')
-        //document.getElementById('log_in').classList.remove("hidden")
     }
 }
 
 function log_out(){
     localStorage.removeItem('logged_in');
     localStorage.removeItem('account');
-    //document.getElementById('adminButton').classList.add('hidden');
     currentAccount = {}
     window.location.replace("./project.html");
 }
 
+function showFilters(id1, id2, id3) {
+    elem1 = document.getElementById(id1);
+    elem2 = document.getElementById(id2);
+    elem3 = document.getElementById(id3);
+    if (elem1.classList.contains("hidden")) {
+        elem1.classList.remove("hidden");
+        elem2.classList.add("hidden");
+        elem3.classList.add("hidden");
+    } else {
+        elem1.classList.add("hidden");
+    }
+}
+
+async function filter() {
+    var checkboxes = document.querySelectorAll('input[name="filter"]');
+    var yearFilters = [];
+    var genreFilters = [];
+    var priceFilters = [];
+    var filteredByGenre = [];
+    for (var i = 0; i<4; i++) {
+        if (checkboxes[i].checked === true) {
+            genreFilters.push(checkboxes[i].value)
+        }
+    }
+    for (var i = 4; i<8; i++) {
+        if (checkboxes[i].checked === true) {
+            yearFilters.push(checkboxes[i].value)
+        }
+    }
+    for (var i = 8; i<11; i++) {
+        if (checkboxes[i].checked === true) {
+            priceFilters.push(checkboxes[i].value)
+        }
+    }
+    filteredByGenre = await filterByGenre(genreFilters);
+    filteredByYear = await filterByYear(yearFilters, filteredByGenre);
+    filteredProducts = await filterByPrice(priceFilters, filteredByYear);
+    drawProducts(filteredProducts);
+}
+
+function filterByGenre(genreFilters){
+    var filtered=[];
+    if (genreFilters.length === 0) {
+        filtered = products;
+        return filtered
+    } else {
+        for (var i in products) {
+            if (genreFilters.includes(products[i].genre)) {
+                filtered.push(products[i])
+            }
+        }
+        return filtered;
+    }
+}
+
+function filterByYear(yearFilters, filteredByGenre) {
+    var filtered=[];
+    if (yearFilters.length === 0) {
+        filtered = filteredByGenre;
+        return filtered
+    } else {
+        for (var i in filteredByGenre) {
+            for (var y in yearFilters) {
+                if ((parseInt(yearFilters[y]) <= parseInt(filteredByGenre[i].year)) && (parseInt(filteredByGenre[i].year) <= parseInt(yearFilters[y]) + 9)) {
+                    filtered.push(filteredByGenre[i])
+                }
+            }
+        }
+        return filtered;
+    }
+}
+
+function filterByPrice(priceFilters, filteredByYear) {
+    var filtered=[];
+    if (priceFilters.length === 0) {
+        filtered = filteredByYear;
+        return filtered
+    } else {
+        for (var i in filteredByYear) {
+            for (var p in priceFilters) {
+                if (parseInt(priceFilters[p])===20) {
+                    if (parseInt(priceFilters[p]) <= parseInt(filteredByYear[i].price)){
+                        filtered.push(filteredByYear[i])
+                    }
+                } else {
+                    if ((parseInt(priceFilters[p]) <= parseInt(filteredByYear[i].price)) && (parseInt(filteredByYear[i].price) <= parseInt(priceFilters[p]) + 9)) {
+                        filtered.push(filteredByYear[i])
+                    }
+                } 
+            }
+        }
+        return filtered;
+    }
+}
+
+function sortProducts(){
+    var criterion = document.getElementById("sort").value;
+    if (filteredProducts.length!==productsArray){
+        sortByCriteria(criterion, filteredProducts)
+    } else {
+        sortByCriteria(criterion, productsArray)
+    }
+}
+
+function sortByCriteria(criterion, toBeSorted){
+    if (criterion === "A-Z" || criterion === "Z-A"){
+        sortAZ_ZA(toBeSorted, criterion);
+    } else if (criterion === "asc" || criterion === "desc") {
+        sortAsc_Desc(toBeSorted, criterion);
+    }
+}
+
+function sortAZ_ZA(toBeSorted, criterion){
+    toBeSorted.sort(function(a, b){
+        var alpha = a.name.toLowerCase();
+        var omega = b.name.toLowerCase();
+        if (criterion === "A-Z") {
+            if (alpha < omega) {return -1;}
+            if (omega > alpha) {return 1;}
+        } else {
+            if (alpha > omega) {return -1;}
+            if (omega < alpha) {return 1;}
+        }
+    })
+    drawProducts(toBeSorted);
+}
+
+function sortAsc_Desc(toBeSorted, criterion) {
+    toBeSorted.sort(function(a,b){
+        if (criterion === "asc"){
+            return parseInt(a.price) - parseInt(b.price);
+        } else {
+            return parseInt(b.price) - parseInt(a.price);
+        }
+    })
+    drawProducts(toBeSorted);
+}
+
 async function getProducts(x) {
-    //localStorage.clear()
-    console.log(localStorage)
-    console.log(window.location.href)
     logged_in()
     document.getElementById("products").classList.add("hidden");
     document.getElementById("loading").classList.remove("hidden");
     var response = await ajax("get","https://final-project-d6167.firebaseio.com/.json");
     products = JSON.parse(response);
+    if (products !== null){
+        productsArray = Object.values(products)
+    }
     if (x === 'main'){
-        // undo la clasele CSS a plecat in functiile drawProducts si drawAdminProducts si getCart (facem ajax si in cart ca sa vada products)
         adminAccess()
         log_in_visibility()
-        drawProducts();
+        drawProducts(products);
         document.getElementById("carousel").classList.remove("invisible");
         slideShow()
     } else if (x === 'admin') {
@@ -126,17 +260,16 @@ async function getProducts(x) {
             getCart()
         }
     }
-    //logged_in()
 }
 
-function drawProducts() {
+function drawProducts(toBeDrawn) {
     var str = "";
-    for (var i in products) {
+    for (var i in toBeDrawn) {
         str += `
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 product">
-                <img class="img" src="${products[i].image}"><br>
-                <span class="info">${products[i].name}</span><br>
-                <span class="info">${products[i].price}$</span><a class="info" href="./details.html?id=${i}"><button>Details</button></a>
+                <img class="img" src="${toBeDrawn[i].image}"><br>
+                <span class="info">${toBeDrawn[i].name}</span><br>
+                <span class="info">${toBeDrawn[i].price}$</span><a class="info" href="./details.html?id=${i}"><button>Details</button></a>
             </div>
         `
     }
@@ -162,7 +295,8 @@ async function getDetails() {
 function drawDetails() {
     document.getElementById("detail-image").src = product.image;
     document.getElementById("detail-name").innerHTML = product.name;
-    document.getElementById("detail-description").innerHTML = product.description;
+    document.getElementById("detail-year").innerHTML = product.year;
+    document.getElementById("detail-description").innerHTML = product.genre;
     document.getElementById("detail-price").innerHTML = product.price + ' $';
     document.getElementById("q").max = product.stock;
 }
@@ -174,8 +308,6 @@ function addToCart(target) {
     var newQuantity = 0
     var inCart = 0;
     var inStock = product.stock;
-    console.log(Object.keys(localStorage).includes('cart'))
-    //console.log(Object.keys(JSON.parse(localStorage['cart'])).includes(name))
     if(Object.keys(localStorage).includes('cart')){
         cart = JSON.parse(localStorage['cart'])
         if (Object.keys(JSON.parse(localStorage['cart'])).includes(target)){
@@ -207,25 +339,22 @@ function addToCart(target) {
             document.getElementById("invalidOrder").classList.add("hidden");
         }, 3000);
     }
-    console.log(cart)
 }
 
 function verifyCart(key) {
-    /*save properties cu Object.keys intr-un array
-        if (cart[key].price !== products[key].price) {
-        iterezi prin array si compari cu ce e in cart
-        daca nu e egal (except quantity) reasign ce e in cos sa fie ca ce e in baza de data
-        pentru quantity make sure sa nu fie mai mare ca stocul
-    }*/
     var currentProduct = cart[key]
-    if (currentProduct.name !== products[key].name) {
-        currentProduct.name = products[key].name;
-    }
-    if (currentProduct.price !== products[key].price) {
-        currentProduct.price = products[key].price;
-    }
-    if (currentProduct.quantity > products[key].stock) {
-        currentProduct.quantity = products[key].stock
+    if (products.hasOwnProperty(key)){
+        if (currentProduct.name !== products[key].name) {
+            currentProduct.name = products[key].name;
+        }
+        if (currentProduct.price !== products[key].price) {
+            currentProduct.price = products[key].price;
+        }
+        if (currentProduct.quantity > products[key].stock) {
+            currentProduct.quantity = products[key].stock
+        }
+    } else {
+        remove(key);
     }
 }
 
@@ -243,6 +372,12 @@ function getCart() {
     var total = 0;
     var counter = 0;
     for (var key in cart) {
+        if (!isEmpty(cart)){
+            verifyCart(key);
+            if (!(products.hasOwnProperty(key))){
+                continue;
+            }
+        }
         str += `
         <tr>
             <td><span>${cart[key].name}</span></td>
@@ -258,7 +393,6 @@ function getCart() {
     document.getElementById("cartBody").innerHTML=str;
     document.getElementById('counter').innerHTML='Produse: ' + counter;
     document.getElementById('total').innerHTML='Total: ' + total;
-    //cesese loading undo
     document.getElementById("products").classList.remove("hidden");
     document.getElementById("loading").classList.add("hidden");
 }
@@ -274,7 +408,6 @@ function increase(key){
             "price": JSON.parse(localStorage['cart'])[key].price,
             "quantity": quantum
         }
-        //localStorage.setItem(key, JSON.stringify(cartItem));
         cart[key] = cartItem
         localStorage.setItem('cart', JSON.stringify(cart));
         getCart()
@@ -300,7 +433,6 @@ function remove(key){
     delete cart[key];
     localStorage.setItem('cart', JSON.stringify(cart));
     getCart();
-    console.log(cart)
 }
 
 function drawAdminProducts(){
@@ -310,8 +442,10 @@ function drawAdminProducts(){
         <tr>
             <td><img width="25" height="25" src='${products[i].image}'></td>
             <td><span onclick="manage('${i}')">${products[i].name}</span></td>
+            <td><span>${products[i].genre}</span></td>
             <td><span>${products[i].price} $</span></td>
             <td><span>${products[i].stock}</span></td>
+            <td><span>${products[i].year}</span></td>
             <td><span onclick="removeProduct('${i}')">Remove</span></td>
         </tr>
         `
@@ -324,23 +458,20 @@ function drawAdminProducts(){
 async function removeProduct(i){
     var confirmDelete = confirm("Confirm Delete?");
     if (confirmDelete === true) {
-        await ajax("DELETE", `https://final-project-d6167.firebaseio.com/${i}.json`, true)
+        await ajax("DELETE", `https://final-project-d6167.firebaseio.com/${i}.json`)
         getProducts('admin');
     }
 }
 
 function manage(key) {
-    console.log(key);
     document.getElementById('products').classList.add('hidden');
     document.getElementById('manage').classList.remove('hidden');
     if (key !== 'add') {
         var product = products[key]
         getData(product);
         keyEdit = key
-        console.log(keyEdit)
     } else {
         getData(null);
-        console.log(keyEdit)
     }
 }
 
@@ -348,46 +479,46 @@ function getData(product){
     if (product !== null) {
         document.getElementById('manageImage').value = product.image
         document.getElementById('manageName').value = product.name
-        document.getElementById('manageDescription').value = product.description
+        document.getElementById('manageGenre').value = product.genre
         document.getElementById('managePrice').value = product.price
         document.getElementById('manageStock').value = product.stock
+        document.getElementById('manageYear').value = product.year
     } else {
         document.getElementById('manageImage').value = "";
         document.getElementById('manageName').value = "";
-        document.getElementById('manageDescription').value = "";
+        document.getElementById('manageGenre').value = "";
         document.getElementById('managePrice').value = "";
         document.getElementById('manageStock').value = "";
+        document.getElementById('manageYear').value = "";
     }
 }
 
 async function update(action) {
-    console.log(keyEdit)
     var image = document.getElementById('manageImage').value;
     var name = document.getElementById('manageName').value;
-    var description = document.getElementById('manageDescription').value;
+    var genre = document.getElementById('manageGenre').value;
     var price = document.getElementById('managePrice').value;
     var stock = document.getElementById('manageStock').value;
+    var year = document.getElementById('manageYear').value;
 
     var newProduct = {
         "image":image,
         "name":name,
-        "description":description,
+        "genre":genre,
         "price":price,
-        "stock":stock
+        "stock":stock,
+        "year":year
     }
     
     if (action === 'cancel') {
-        console.log('canceled')
         document.getElementById('products').classList.remove('hidden');
         document.getElementById('manage').classList.add('hidden');
         keyEdit = '';
     } else if (keyEdit === ''){
-        console.log('adding');
         await ajax("POST", `https://final-project-d6167.firebaseio.com/.json`, JSON.stringify(newProduct));
         getProducts('admin');
         document.getElementById('manage').classList.add('hidden');
-    } else {
-        console.log('editing')        
+    } else {    
         await ajax("PUT", `https://final-project-d6167.firebaseio.com/${keyEdit}.json`, JSON.stringify(newProduct));
         getProducts('admin');
         document.getElementById('products').classList.remove('hidden');
@@ -397,7 +528,6 @@ async function update(action) {
 }
 
 function checkout() {
-    console.log(localStorage.getItem("logged_in"))
     if (localStorage.getItem("logged_in")) {
         if (!isEmpty(cart)){
             var buy = confirm("Confirm transaction?");
@@ -415,27 +545,6 @@ function checkout() {
 function hide_log_in(){
     document.getElementById("log_in_cart").classList.add("hidden");
 }
-
-/*function checkoutRedirect(){
-    document.getElementById('transaction').classList.add('hidden');
-    document.getElementById('products').classList.remove('hidden');
-    getCart()
-}*/
-
-/*async function acquisition() {
-    for (key in cart) {
-        var updated = products[key];
-        updated.stock -= parseInt(cart[key].quantity);
-        delete cart[key]
-        await ajax("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
-        console.log(mypromise)
-        if (isEmpty(cart)){
-            localStorage.removeItem('cart');
-            document.getElementById('products').classList.add('hidden');
-            document.getElementById('transaction').classList.remove('hidden');
-        }
-    }
-}*/
 
 function transaction(){
     document.getElementById('processing').classList.add('hidden');
@@ -455,34 +564,12 @@ async function acquisition() {
         var updated = products[key];
         updated.stock -= parseInt(cart[key].quantity);
         delete cart[key]
-        console.log(cart)
         var mypromise = await ajax("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
         ajaxes.push(mypromise);
         if (isEmpty(cart)){
-            localStorage.removeItem('cart');;
+            localStorage.removeItem('cart');
         }
     }
     await Promise.all(ajaxes);
     transaction()
 }
-
-/*function acquisition() {
-    return new Promise(function(resolve, reject){
-        for (key in cart) {
-            var updated = products[key];
-            updated.stock -= parseInt(cart[key].quantity);
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState === 4 && this.status === 200) {
-                    delete cart[key]
-                    console.log('done')
-                    console.log(cart)
-                    console.log(isEmpty(cart))
-                }
-            }
-            xhttp.open("PUT", `https://final-project-d6167.firebaseio.com/${key}.json`, true)
-            xhttp.send(JSON.stringify(updated));
-        }
-        resolve;
-    })
-}*/

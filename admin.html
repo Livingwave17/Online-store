@@ -21,10 +21,12 @@
             </div>
             <table border="1" id="adminTable" class="center">
                 <thead>
-                    <td><span>Imagine</span></td>
-                    <td><span>Nume</span></td>
-                    <td><span>Pret</span></td>
-                    <td><span>Cantitate</span></td>
+                    <td><span>Image</span></td>
+                    <td><span>Name</span></td>
+                    <td><span>Genre</span></td>
+                    <td><span>Price</span></td>
+                    <td><span>Stock</span></td>
+                    <td><span>Year</span></td>
                     <td></td>
                 </thead>
                 <tbody id="productsAdmin">
@@ -58,9 +60,20 @@
                 </td>
             </tr>
             <tr>
-                <td><span>Description</span></td>
+                <td><span>Release Year</span></td>
                 <td>
-                    <textarea id="manageDescription"></textarea>
+                    <input type='number' id="manageYear">
+                </td>
+            </tr>
+            <tr>
+                <td><span>Genre</span></td>
+                <td>
+                    <select selected id="manageGenre">
+                        <option value="Progressive Metal">Progressive Metal</option>
+                        <option value="Progressive Rock">Progressive Rock</option>
+                        <option value="Instrumental">Instrumental</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </td>
             </tr>
             <tr>
