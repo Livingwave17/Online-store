@@ -1,5 +1,5 @@
 var products;
-var productsArray
+var productsArray = {};
 var filteredProducts = {};
 var cart = {};
 var product;
@@ -126,7 +126,7 @@ async function filter() {
     filteredByGenre = await filterByGenre(genreFilters);
     filteredByYear = await filterByYear(yearFilters, filteredByGenre);
     filteredProducts = await filterByPrice(priceFilters, filteredByYear);
-    drawProducts(filteredProducts);
+    sortProducts();
 }
 
 function filterByGenre(genreFilters){
@@ -186,7 +186,7 @@ function filterByPrice(priceFilters, filteredByYear) {
 
 function sortProducts(){
     var criterion = document.getElementById("sort").value;
-    if (filteredProducts.length!==productsArray){
+    if (filteredProducts.length!==productsArray.length && filteredProducts.length!==undefined){
         sortByCriteria(criterion, filteredProducts)
     } else {
         sortByCriteria(criterion, productsArray)
@@ -198,6 +198,8 @@ function sortByCriteria(criterion, toBeSorted){
         sortAZ_ZA(toBeSorted, criterion);
     } else if (criterion === "asc" || criterion === "desc") {
         sortAsc_Desc(toBeSorted, criterion);
+    } else {
+        drawProducts(toBeSorted)
     }
 }
 
