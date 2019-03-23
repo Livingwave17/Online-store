@@ -28,7 +28,7 @@ function ajax(method, url, body) {
   }));
 }
 
-async function log_in() {
+async function logIn() {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
   const response = await ajax('GET', 'https://final-project-accounts.firebaseio.com/.json');
