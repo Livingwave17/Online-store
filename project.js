@@ -63,7 +63,7 @@ function adminAccess() {
   }
 }
 
-function log_in_visibility() {
+function logInVisibility() {
   if (localStorage.getItem('logged_in') !== null) {
     if (localStorage.getItem('logged_in')) {
       document.getElementById('log_in').classList.add('hidden');
@@ -233,7 +233,7 @@ async function getProducts(x) {
   }
   if (x === 'main') {
     adminAccess();
-    log_in_visibility();
+    logInVisibility();
     drawProducts(products);
     document.getElementById('carousel').classList.remove('invisible');
     slideShow();
