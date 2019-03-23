@@ -73,7 +73,7 @@ function logInVisibility() {
   }
 }
 
-function logged_in() {
+function loggedIn() {
   if (localStorage.getItem('logged_in')) {
     document.getElementById('log_out').classList.remove('hidden');
   } else {
@@ -223,7 +223,7 @@ function sortAsc_Desc(toBeSorted, criterion) {
 }
 
 async function getProducts(x) {
-  logged_in();
+  loggedIn();
   document.getElementById('products').classList.add('hidden');
   document.getElementById('loading').classList.remove('hidden');
   const response = await ajax('get', 'https://final-project-d6167.firebaseio.com/.json');
@@ -274,7 +274,7 @@ function drawProducts(toBeDrawn) {
 }
 
 async function getDetails() {
-  logged_in();
+  loggedIn();
   adminAccess();
   const target = location.search.substring(4);
   document.getElementById('details').classList.add('hidden');
