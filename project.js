@@ -81,7 +81,7 @@ function loggedIn() {
   }
 }
 
-function log_out() {
+function logOut() {
   localStorage.removeItem('logged_in');
   localStorage.removeItem('account');
   currentAccount = {};
