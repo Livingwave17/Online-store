@@ -89,9 +89,9 @@ function logOut() {
 }
 
 function showFilters(id1, id2, id3) {
-  elem1 = document.getElementById(id1);
-  elem2 = document.getElementById(id2);
-  elem3 = document.getElementById(id3);
+  const elem1 = document.getElementById(id1);
+  const elem2 = document.getElementById(id2);
+  const elem3 = document.getElementById(id3);
   if (elem1.classList.contains('hidden')) {
     elem1.classList.remove('hidden');
     elem2.classList.add('hidden');
