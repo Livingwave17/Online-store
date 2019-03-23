@@ -107,17 +107,17 @@ async function filter() {
   const genreFilters = [];
   const priceFilters = [];
   let filteredByGenre = [];
-  for (var i = 0; i < 4; i++) {
+  for (let i = 0; i < 4; i++) {
     if (checkboxes[i].checked === true) {
       genreFilters.push(checkboxes[i].value);
     }
   }
-  for (var i = 4; i < 8; i++) {
+  for (let i = 4; i < 8; i++) {
     if (checkboxes[i].checked === true) {
       yearFilters.push(checkboxes[i].value);
     }
   }
-  for (var i = 8; i < 11; i++) {
+  for (let i = 8; i < 11; i++) {
     if (checkboxes[i].checked === true) {
       priceFilters.push(checkboxes[i].value);
     }
