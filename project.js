@@ -33,7 +33,7 @@ async function logIn() {
   const password = document.getElementById('password').value;
   const response = await ajax('GET', 'https://final-project-accounts.firebaseio.com/.json');
   accounts = Object.values(JSON.parse(response));
-  for (i in accounts) {
+  for (let i = 0; i < accounts.length; i += 1) {
     if (accounts[i].user === username) {
       if (accounts[i].pass === password) {
         currentAccount = accounts[i];
