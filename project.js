@@ -88,7 +88,7 @@ function logOut() {
   window.location.replace('./project.html');
 }
 
-function sortAZ_ZA(toBeSorted, criterion) {
+function sortAZZA(toBeSorted, criterion) {
   toBeSorted.sort((a, b) => {
     const alpha = a.name.toLowerCase();
     const omega = b.name.toLowerCase();
@@ -103,7 +103,7 @@ function sortAZ_ZA(toBeSorted, criterion) {
   drawProducts(toBeSorted);
 }
 
-function sortAsc_Desc(toBeSorted, criterion) {
+function sortAscDesc(toBeSorted, criterion) {
   toBeSorted.sort((a, b) => {
     if (criterion === 'asc') {
       return parseInt(a.price) - parseInt(b.price);
@@ -115,9 +115,9 @@ function sortAsc_Desc(toBeSorted, criterion) {
 
 function sortByCriteria(criterion, toBeSorted) {
   if (criterion === 'A-Z' || criterion === 'Z-A') {
-    sortAZ_ZA(toBeSorted, criterion);
+    sortAZZA(toBeSorted, criterion);
   } else if (criterion === 'asc' || criterion === 'desc') {
-    sortAsc_Desc(toBeSorted, criterion);
+    sortAscDesc(toBeSorted, criterion);
   } else {
     drawProducts(toBeSorted);
   }
