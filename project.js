@@ -95,10 +95,11 @@ function sortAZZA(toBeSorted, criterion) {
     if (criterion === 'A-Z') {
       if (alpha < omega) { return -1; }
       if (omega > alpha) { return 1; }
-    } else {
-      if (alpha > omega) { return -1; }
-      if (omega < alpha) { return 1; }
+      return 0;
     }
+    if (alpha > omega) { return -1; }
+    if (omega < alpha) { return 1; }
+    return 0;
   });
   drawProducts(toBeSorted);
 }
