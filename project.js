@@ -123,9 +123,9 @@ function sortAZZA(toBeSorted, criterion) {
 function sortAscDesc(toBeSorted, criterion) {
   toBeSorted.sort((a, b) => {
     if (criterion === 'asc') {
-      return parseInt(a.price) - parseInt(b.price);
+      return parseInt(a.price, 10) - parseInt(b.price, 10);
     }
-    return parseInt(b.price) - parseInt(a.price);
+    return parseInt(b.price, 10) - parseInt(a.price, 10);
   });
   drawProducts(toBeSorted);
 }
@@ -184,8 +184,8 @@ function filterByYear(yearFilters, filteredByGenre) {
   }
   for (let i; i < filteredByGenre.length; i += 1) {
     for (let y; y < yearFilters.length; y += 1) {
-      if ((parseInt(yearFilters[y]) <= parseInt(filteredByGenre[i].year))
-        && (parseInt(filteredByGenre[i].year) <= parseInt(yearFilters[y]) + 9)) {
+      if ((parseInt(yearFilters[y], 10) <= parseInt(filteredByGenre[i].year, 10))
+        && (parseInt(filteredByGenre[i].year, 10) <= parseInt(yearFilters[y], 10) + 9)) {
         filtered.push(filteredByGenre[i]);
       }
     }
@@ -201,12 +201,12 @@ function filterByPrice(priceFilters, filteredByYear) {
   }
   for (let i; i < filteredByYear.length; i += 1) {
     for (let p; p < priceFilters.length; p += 1) {
-      if (parseInt(priceFilters[p]) === 20) {
-        if (parseInt(priceFilters[p]) <= parseInt(filteredByYear[i].price)) {
+      if (parseInt(priceFilters[p], 10) === 20) {
+        if (parseInt(priceFilters[p], 10) <= parseInt(filteredByYear[i].price, 10)) {
           filtered.push(filteredByYear[i]);
         }
-      } else if ((parseInt(priceFilters[p]) <= parseInt(filteredByYear[i].price))
-        && (parseInt(filteredByYear[i].price) <= parseInt(priceFilters[p]) + 9)) {
+      } else if ((parseInt(priceFilters[p], 10) <= parseInt(filteredByYear[i].price, 10))
+        && (parseInt(filteredByYear[i].price, 10) <= parseInt(priceFilters[p], 10) + 9)) {
         filtered.push(filteredByYear[i]);
       }
     }
