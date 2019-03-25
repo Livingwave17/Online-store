@@ -88,6 +88,41 @@ function logOut() {
   window.location.replace('./project.html');
 }
 
+function sortAZ_ZA(toBeSorted, criterion) {
+  toBeSorted.sort((a, b) => {
+    const alpha = a.name.toLowerCase();
+    const omega = b.name.toLowerCase();
+    if (criterion === 'A-Z') {
+      if (alpha < omega) { return -1; }
+      if (omega > alpha) { return 1; }
+    } else {
+      if (alpha > omega) { return -1; }
+      if (omega < alpha) { return 1; }
+    }
+  });
+  drawProducts(toBeSorted);
+}
+
+function sortAsc_Desc(toBeSorted, criterion) {
+  toBeSorted.sort((a, b) => {
+    if (criterion === 'asc') {
+      return parseInt(a.price) - parseInt(b.price);
+    }
+    return parseInt(b.price) - parseInt(a.price);
+  });
+  drawProducts(toBeSorted);
+}
+
+function sortByCriteria(criterion, toBeSorted) {
+  if (criterion === 'A-Z' || criterion === 'Z-A') {
+    sortAZ_ZA(toBeSorted, criterion);
+  } else if (criterion === 'asc' || criterion === 'desc') {
+    sortAsc_Desc(toBeSorted, criterion);
+  } else {
+    drawProducts(toBeSorted);
+  }
+}
+
 function sortProducts() {
   const criterion = document.getElementById('sort').value;
   if (filteredProducts.length !== productsArray.length && filteredProducts.length !== undefined) {
@@ -187,41 +222,6 @@ async function setFilters() {
   filteredByYear = await filterByYear(yearFilters, filteredByGenre);
   filteredProducts = await filterByPrice(priceFilters, filteredByYear);
   sortProducts();
-}
-
-function sortByCriteria(criterion, toBeSorted) {
-  if (criterion === 'A-Z' || criterion === 'Z-A') {
-    sortAZ_ZA(toBeSorted, criterion);
-  } else if (criterion === 'asc' || criterion === 'desc') {
-    sortAsc_Desc(toBeSorted, criterion);
-  } else {
-    drawProducts(toBeSorted);
-  }
-}
-
-function sortAZ_ZA(toBeSorted, criterion) {
-  toBeSorted.sort((a, b) => {
-    const alpha = a.name.toLowerCase();
-    const omega = b.name.toLowerCase();
-    if (criterion === 'A-Z') {
-      if (alpha < omega) { return -1; }
-      if (omega > alpha) { return 1; }
-    } else {
-      if (alpha > omega) { return -1; }
-      if (omega < alpha) { return 1; }
-    }
-  });
-  drawProducts(toBeSorted);
-}
-
-function sortAsc_Desc(toBeSorted, criterion) {
-  toBeSorted.sort((a, b) => {
-    if (criterion === 'asc') {
-      return parseInt(a.price) - parseInt(b.price);
-    }
-    return parseInt(b.price) - parseInt(a.price);
-  });
-  drawProducts(toBeSorted);
 }
 
 async function getProducts(x) {
