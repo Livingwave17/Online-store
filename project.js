@@ -132,7 +132,8 @@ function filterByYear(yearFilters, filteredByGenre) {
   }
   for (let i; i < filteredByGenre.length; i += 1) {
     for (let y; y < yearFilters.length; y += 1) {
-      if ((parseInt(yearFilters[y]) <= parseInt(filteredByGenre[i].year)) && (parseInt(filteredByGenre[i].year) <= parseInt(yearFilters[y]) + 9)) {
+      if ((parseInt(yearFilters[y]) <= parseInt(filteredByGenre[i].year))
+        && (parseInt(filteredByGenre[i].year) <= parseInt(yearFilters[y]) + 9)) {
         filtered.push(filteredByGenre[i]);
       }
     }
@@ -152,7 +153,8 @@ function filterByPrice(priceFilters, filteredByYear) {
         if (parseInt(priceFilters[p]) <= parseInt(filteredByYear[i].price)) {
           filtered.push(filteredByYear[i]);
         }
-      } else if ((parseInt(priceFilters[p]) <= parseInt(filteredByYear[i].price)) && (parseInt(filteredByYear[i].price) <= parseInt(priceFilters[p]) + 9)) {
+      } else if ((parseInt(priceFilters[p]) <= parseInt(filteredByYear[i].price))
+        && (parseInt(filteredByYear[i].price) <= parseInt(priceFilters[p]) + 9)) {
         filtered.push(filteredByYear[i]);
       }
     }
