@@ -88,6 +88,22 @@ function logOut() {
   window.location.replace('./project.html');
 }
 
+function drawProducts(toBeDrawn) {
+  let str = '';
+  for (const i in toBeDrawn) {
+    str += `
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 product">
+                <img class="img" src="${toBeDrawn[i].image}"><br>
+                <span class="info">${toBeDrawn[i].name}</span><br>
+                <span class="info">${toBeDrawn[i].price}$</span><a class="info" href="./details.html?id=${i}"><button>Details</button></a>
+            </div>
+        `;
+  }
+  document.getElementById('grid').innerHTML = str;
+  document.getElementById('products').classList.remove('hidden');
+  document.getElementById('loading').classList.add('hidden');
+}
+
 function sortAZZA(toBeSorted, criterion) {
   toBeSorted.sort((a, b) => {
     const alpha = a.name.toLowerCase();
@@ -258,22 +274,6 @@ async function getProducts(x) {
       getCart();
     }
   }
-}
-
-function drawProducts(toBeDrawn) {
-  let str = '';
-  for (const i in toBeDrawn) {
-    str += `
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 product">
-                <img class="img" src="${toBeDrawn[i].image}"><br>
-                <span class="info">${toBeDrawn[i].name}</span><br>
-                <span class="info">${toBeDrawn[i].price}$</span><a class="info" href="./details.html?id=${i}"><button>Details</button></a>
-            </div>
-        `;
-  }
-  document.getElementById('grid').innerHTML = str;
-  document.getElementById('products').classList.remove('hidden');
-  document.getElementById('loading').classList.add('hidden');
 }
 
 async function getDetails() {
