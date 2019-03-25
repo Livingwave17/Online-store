@@ -116,7 +116,7 @@ function filterByGenre(genreFilters) {
     filtered = products;
     return filtered;
   }
-  for (const i in products) {
+  for (let i; i < products.length; i += 1) {
     if (genreFilters.includes(products[i].genre)) {
       filtered.push(products[i]);
     }
@@ -130,7 +130,7 @@ function filterByYear(yearFilters, filteredByGenre) {
     filtered = filteredByGenre;
     return filtered;
   }
-  for (const i in filteredByGenre) {
+  for (let i; i < filteredByGenre.length; i += 1) {
     for (const y in yearFilters) {
       if ((parseInt(yearFilters[y]) <= parseInt(filteredByGenre[i].year)) && (parseInt(filteredByGenre[i].year) <= parseInt(yearFilters[y]) + 9)) {
         filtered.push(filteredByGenre[i]);
@@ -146,7 +146,7 @@ function filterByPrice(priceFilters, filteredByYear) {
     filtered = filteredByYear;
     return filtered;
   }
-  for (const i in filteredByYear) {
+  for (let i; i < filteredByYear.length; i += 1) {
     for (const p in priceFilters) {
       if (parseInt(priceFilters[p]) === 20) {
         if (parseInt(priceFilters[p]) <= parseInt(filteredByYear[i].price)) {
