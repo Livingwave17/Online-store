@@ -90,7 +90,7 @@ function logOut() {
 
 function drawProducts(toBeDrawn) {
   let str = '';
-  for (const i in toBeDrawn) {
+  for (let i; i <= toBeDrawn.length; i += 1) {
     str += `
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 product">
                 <img class="img" src="${toBeDrawn[i].image}"><br>
