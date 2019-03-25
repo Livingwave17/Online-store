@@ -88,6 +88,15 @@ function logOut() {
   window.location.replace('./project.html');
 }
 
+function sortProducts() {
+  const criterion = document.getElementById('sort').value;
+  if (filteredProducts.length !== productsArray.length && filteredProducts.length !== undefined) {
+    sortByCriteria(criterion, filteredProducts);
+  } else {
+    sortByCriteria(criterion, productsArray);
+  }
+}
+
 function showFilters(id1, id2, id3) {
   const elem1 = document.getElementById(id1);
   const elem2 = document.getElementById(id2);
@@ -99,33 +108,6 @@ function showFilters(id1, id2, id3) {
   } else {
     elem1.classList.add('hidden');
   }
-}
-
-async function filter() {
-  const checkboxes = document.querySelectorAll('input[name="filter"]');
-  const yearFilters = [];
-  const genreFilters = [];
-  const priceFilters = [];
-  let filteredByGenre = [];
-  for (let i = 0; i < 4; i += 1) {
-    if (checkboxes[i].checked === true) {
-      genreFilters.push(checkboxes[i].value);
-    }
-  }
-  for (let i = 4; i < 8; i += 1) {
-    if (checkboxes[i].checked === true) {
-      yearFilters.push(checkboxes[i].value);
-    }
-  }
-  for (let i = 8; i < 11; i += 1) {
-    if (checkboxes[i].checked === true) {
-      priceFilters.push(checkboxes[i].value);
-    }
-  }
-  filteredByGenre = await filterByGenre(genreFilters);
-  filteredByYear = await filterByYear(yearFilters, filteredByGenre);
-  filteredProducts = await filterByPrice(priceFilters, filteredByYear);
-  sortProducts();
 }
 
 function filterByGenre(genreFilters) {
@@ -178,13 +160,31 @@ function filterByPrice(priceFilters, filteredByYear) {
   return filtered;
 }
 
-function sortProducts() {
-  const criterion = document.getElementById('sort').value;
-  if (filteredProducts.length !== productsArray.length && filteredProducts.length !== undefined) {
-    sortByCriteria(criterion, filteredProducts);
-  } else {
-    sortByCriteria(criterion, productsArray);
+async function setFilters() {
+  const checkboxes = document.querySelectorAll('input[name="filter"]');
+  const yearFilters = [];
+  const genreFilters = [];
+  const priceFilters = [];
+  let filteredByGenre = [];
+  for (let i = 0; i < 4; i += 1) {
+    if (checkboxes[i].checked === true) {
+      genreFilters.push(checkboxes[i].value);
+    }
   }
+  for (let i = 4; i < 8; i += 1) {
+    if (checkboxes[i].checked === true) {
+      yearFilters.push(checkboxes[i].value);
+    }
+  }
+  for (let i = 8; i < 11; i += 1) {
+    if (checkboxes[i].checked === true) {
+      priceFilters.push(checkboxes[i].value);
+    }
+  }
+  filteredByGenre = await filterByGenre(genreFilters);
+  filteredByYear = await filterByYear(yearFilters, filteredByGenre);
+  filteredProducts = await filterByPrice(priceFilters, filteredByYear);
+  sortProducts();
 }
 
 function sortByCriteria(criterion, toBeSorted) {
