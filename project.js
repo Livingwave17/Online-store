@@ -90,12 +90,13 @@ function logOut() {
 
 function drawProducts(toBeDrawn) {
   let str = '';
-  for (let i; i <= toBeDrawn.length; i += 1) {
+  const toBeDrawnArray = Object.values(toBeDrawn);
+  for (let i = 0; i < toBeDrawnArray.length; i += 1) {
     str += `
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 product">
-                <img class="img" src="${toBeDrawn[i].image}"><br>
-                <span class="info">${toBeDrawn[i].name}</span><br>
-                <span class="info">${toBeDrawn[i].price}$</span><a class="info" href="./details.html?id=${i}"><button>Details</button></a>
+                <img class="img" src="${toBeDrawnArray[i].image}"><br>
+                <span class="info">${toBeDrawnArray[i].name}</span><br>
+                <span class="info">${toBeDrawnArray[i].price}$</span><a class="info" href="./details.html?id=${i}"><button>Details</button></a>
             </div>
         `;
   }
