@@ -169,7 +169,7 @@ function filterByGenre(genreFilters) {
     filtered = productsArray;
     return filtered;
   }
-  for (let i = 0; i < products.length; i += 1) {
+  for (let i = 0; i < productsArray.length; i += 1) {
     if (genreFilters.includes(productsArray[i].genre)) {
       filtered.push(productsArray[i]);
     }
