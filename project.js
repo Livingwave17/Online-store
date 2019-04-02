@@ -166,14 +166,15 @@ function showFilters(id1, id2, id3) {
 function filterByGenre(genreFilters) {
   let filtered = [];
   if (genreFilters.length === 0) {
-    filtered = products;
+    filtered = productsArray;
     return filtered;
   }
-  for (let i; i < products.length; i += 1) {
-    if (genreFilters.includes(products[i].genre)) {
-      filtered.push(products[i]);
+  for (let i = 0; i < products.length; i += 1) {
+    if (genreFilters.includes(productsArray[i].genre)) {
+      filtered.push(productsArray[i]);
     }
   }
+  console.log(filtered)
   return filtered;
 }
 
@@ -183,8 +184,8 @@ function filterByYear(yearFilters, filteredByGenre) {
     filtered = filteredByGenre;
     return filtered;
   }
-  for (let i; i < filteredByGenre.length; i += 1) {
-    for (let y; y < yearFilters.length; y += 1) {
+  for (let i = 0; i < filteredByGenre.length; i += 1) {
+    for (let y = 0; y < yearFilters.length; y += 1) {
       if ((parseInt(yearFilters[y], 10) <= parseInt(filteredByGenre[i].year, 10))
         && (parseInt(filteredByGenre[i].year, 10) <= parseInt(yearFilters[y], 10) + 9)) {
         filtered.push(filteredByGenre[i]);
@@ -200,8 +201,8 @@ function filterByPrice(priceFilters, filteredByYear) {
     filtered = filteredByYear;
     return filtered;
   }
-  for (let i; i < filteredByYear.length; i += 1) {
-    for (let p; p < priceFilters.length; p += 1) {
+  for (let i = 0; i < filteredByYear.length; i += 1) {
+    for (let p = 0; p < priceFilters.length; p += 1) {
       if (parseInt(priceFilters[p], 10) === 20) {
         if (parseInt(priceFilters[p], 10) <= parseInt(filteredByYear[i].price, 10)) {
           filtered.push(filteredByYear[i]);
