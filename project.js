@@ -4,6 +4,7 @@ let filteredProducts = {};
 let cart = {};
 let product;
 let keyEdit = '';
+let id;
 let accounts = {};
 let currentAccount = {};
 
@@ -96,7 +97,7 @@ function drawProducts(toBeDrawn) {
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 product">
                 <img class="img" src="${toBeDrawnArray[i].image}"><br>
                 <span class="info">${toBeDrawnArray[i].name}</span><br>
-                <span class="info">${toBeDrawnArray[i].price}$</span><a class="info" href="./details.html?id=${i}"><button>Details</button></a>
+                <span class="info">${toBeDrawnArray[i].price}$</span><a class="info" href="./details.html?id=${toBeDrawnArray[i].id}"><button>Details</button></a>
             </div>
         `;
   }
@@ -174,7 +175,6 @@ function filterByGenre(genreFilters) {
       filtered.push(productsArray[i]);
     }
   }
-  console.log(filtered)
   return filtered;
 }
 
@@ -279,13 +279,15 @@ async function getProducts(x) {
 }
 
 async function getDetails() {
+  localStorage.clear();
+  const response = await ajax('get', 'https://final-project-d6167.firebaseio.com/.json');
   loggedIn();
   adminAccess();
   const target = location.search.substring(4);
   document.getElementById('details').classList.add('hidden');
   document.getElementById('loading').classList.remove('hidden');
-  const response = await ajax('GET', `https://final-project-d6167.firebaseio.com/${target}.json`);
-  product = JSON.parse(response);
+  const productsForDetails = Object.values(JSON.parse(response));
+  product = productsForDetails[target];
   document.getElementById('addToCartButton').innerHTML = `<button onclick="addToCart('${target}')">Add to Cart</button>`;
   drawDetails();
   document.getElementById('details').classList.remove('hidden');
@@ -477,6 +479,7 @@ function manage(key) {
 
 function getData(product) {
   if (product !== null) {
+    id = product.id;
     document.getElementById('manageImage').value = product.image;
     document.getElementById('manageName').value = product.name;
     document.getElementById('manageGenre').value = product.genre;
@@ -493,7 +496,9 @@ function getData(product) {
   }
 }
 
-async function update(action) {
+function update(action) {
+  const ids = [];
+  let ID = 0;
   const image = document.getElementById('manageImage').value;
   const name = document.getElementById('manageName').value;
   const genre = document.getElementById('manageGenre').value;
@@ -501,7 +506,18 @@ async function update(action) {
   const stock = document.getElementById('manageStock').value;
   const year = document.getElementById('manageYear').value;
 
+  if (keyEdit === '') {
+    for (let i = 0; i < productsArray.length; i++) {
+      ids.push(productsArray[i].id);
+    }
+    while (ids.includes(ID.toString())) {
+      ID += 1;
+    }
+    id = ID.toString();
+  }
+
   const newProduct = {
+    id,
     image,
     name,
     genre,
@@ -509,7 +525,10 @@ async function update(action) {
     stock,
     year,
   };
+  upload(action, newProduct);
+}
 
+async function upload(action, newProduct) {
   if (action === 'cancel') {
     document.getElementById('products').classList.remove('hidden');
     document.getElementById('manage').classList.add('hidden');
