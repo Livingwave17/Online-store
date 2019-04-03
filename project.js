@@ -279,7 +279,6 @@ async function getProducts(x) {
 }
 
 async function getDetails() {
-  localStorage.clear();
   const response = await ajax('get', 'https://final-project-d6167.firebaseio.com/.json');
   loggedIn();
   adminAccess();
@@ -345,15 +344,15 @@ function addToCart(target) {
 
 function verifyCart(key) {
   const currentProduct = cart[key];
-  if (products.hasOwnProperty(key)) {
-    if (currentProduct.name !== products[key].name) {
-      currentProduct.name = products[key].name;
+  if (productsArray.hasOwnProperty(key)) {
+    if (currentProduct.name !== productsArray[key].name) {
+      currentProduct.name = productsArray[key].name;
     }
-    if (currentProduct.price !== products[key].price) {
-      currentProduct.price = products[key].price;
+    if (currentProduct.price !== productsArray[key].price) {
+      currentProduct.price = productsArray[key].price;
     }
-    if (currentProduct.quantity > products[key].stock) {
-      currentProduct.quantity = products[key].stock;
+    if (currentProduct.quantity > productsArray[key].stock) {
+      currentProduct.quantity = productsArray[key].stock;
     }
   } else {
     remove(key);
@@ -376,7 +375,7 @@ function getCart() {
   for (const key in cart) {
     if (!isEmpty(cart)) {
       verifyCart(key);
-      if (!(products.hasOwnProperty(key))) {
+      if (!(productsArray.hasOwnProperty(key))) {
         continue;
       }
     }
@@ -401,7 +400,7 @@ function getCart() {
 
 function increase(key) {
   const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
-  const inStock = parseInt(products[key].stock);
+  const inStock = parseInt(productsArray[key].stock);
   if (inCart < inStock) {
     let quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity);
     quantum += 1;
