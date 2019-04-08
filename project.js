@@ -1,5 +1,6 @@
 let products;
-let productsArray = {};
+let productsArray = [];
+let productsKeys = [];
 let filteredProducts = {};
 let cart = {};
 let product;
@@ -89,15 +90,14 @@ function logOut() {
   window.location.replace('./project.html');
 }
 
-function drawProducts(toBeDrawn) {
+function drawProducts(keys) {
   let str = '';
-  const toBeDrawnArray = Object.values(toBeDrawn);
-  for (let i = 0; i < toBeDrawnArray.length; i += 1) {
+  for (let i = 0; i < keys.length; i += 1) {
     str += `
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 product">
-                <img class="img" src="${toBeDrawnArray[i].image}"><br>
-                <span class="info">${toBeDrawnArray[i].name}</span><br>
-                <span class="info">${toBeDrawnArray[i].price}$</span><a class="info" href="./details.html?id=${toBeDrawnArray[i].id}"><button>Details</button></a>
+                <img class="img" src="${products[keys[i]].image}"><br>
+                <span class="info">${products[keys[i]].name}</span><br>
+                <span class="info">${products[keys[i]].price}$</span><a class="info" href="./details.html?id=${keys[i]}"><button>Details</button></a>
             </div>
         `;
   }
@@ -108,8 +108,8 @@ function drawProducts(toBeDrawn) {
 
 function sortAZZA(toBeSorted, criterion) {
   toBeSorted.sort((a, b) => {
-    const alpha = a.name.toLowerCase();
-    const omega = b.name.toLowerCase();
+    const alpha = products[a].name.toLowerCase();
+    const omega = products[b].name.toLowerCase();
     if (criterion === 'A-Z') {
       if (alpha < omega) { return -1; }
       if (omega > alpha) { return 1; }
@@ -125,9 +125,9 @@ function sortAZZA(toBeSorted, criterion) {
 function sortAscDesc(toBeSorted, criterion) {
   toBeSorted.sort((a, b) => {
     if (criterion === 'asc') {
-      return parseInt(a.price, 10) - parseInt(b.price, 10);
+      return parseInt(products[a].price, 10) - parseInt(products[b].price, 10);
     }
-    return parseInt(b.price, 10) - parseInt(a.price, 10);
+    return parseInt(products[b].price, 10) - parseInt(products[a].price, 10);
   });
   drawProducts(toBeSorted);
 }
@@ -144,10 +144,10 @@ function sortByCriteria(criterion, toBeSorted) {
 
 function sortProducts() {
   const criterion = document.getElementById('sort').value;
-  if (filteredProducts.length !== productsArray.length && filteredProducts.length !== undefined) {
+  if (filteredProducts.length !== productsKeys.length && filteredProducts.length !== undefined) {
     sortByCriteria(criterion, filteredProducts);
   } else {
-    sortByCriteria(criterion, productsArray);
+    sortByCriteria(criterion, productsKeys);
   }
 }
 
@@ -167,12 +167,12 @@ function showFilters(id1, id2, id3) {
 function filterByGenre(genreFilters) {
   let filtered = [];
   if (genreFilters.length === 0) {
-    filtered = productsArray;
+    filtered = productsKeys;
     return filtered;
   }
   for (let i = 0; i < productsArray.length; i += 1) {
-    if (genreFilters.includes(productsArray[i].genre)) {
-      filtered.push(productsArray[i]);
+    if (genreFilters.includes(products[productsKeys[i]].genre)) {
+      filtered.push(productsKeys[i]);
     }
   }
   return filtered;
@@ -186,8 +186,8 @@ function filterByYear(yearFilters, filteredByGenre) {
   }
   for (let i = 0; i < filteredByGenre.length; i += 1) {
     for (let y = 0; y < yearFilters.length; y += 1) {
-      if ((parseInt(yearFilters[y], 10) <= parseInt(filteredByGenre[i].year, 10))
-        && (parseInt(filteredByGenre[i].year, 10) <= parseInt(yearFilters[y], 10) + 9)) {
+      if ((parseInt(yearFilters[y], 10) <= parseInt(products[filteredByGenre[i]].year, 10))
+        && (parseInt(products[filteredByGenre[i]].year, 10) <= parseInt(yearFilters[y], 10) + 9)) {
         filtered.push(filteredByGenre[i]);
       }
     }
@@ -204,11 +204,11 @@ function filterByPrice(priceFilters, filteredByYear) {
   for (let i = 0; i < filteredByYear.length; i += 1) {
     for (let p = 0; p < priceFilters.length; p += 1) {
       if (parseInt(priceFilters[p], 10) === 20) {
-        if (parseInt(priceFilters[p], 10) <= parseInt(filteredByYear[i].price, 10)) {
+        if (parseInt(priceFilters[p], 10) <= parseInt(products[filteredByYear[i]].price, 10)) {
           filtered.push(filteredByYear[i]);
         }
-      } else if ((parseInt(priceFilters[p], 10) <= parseInt(filteredByYear[i].price, 10))
-        && (parseInt(filteredByYear[i].price, 10) <= parseInt(priceFilters[p], 10) + 9)) {
+      } else if ((parseInt(priceFilters[p], 10) <= parseInt(products[filteredByYear[i]].price, 10))
+        && (parseInt(products[filteredByYear[i]].price, 10) <= parseInt(priceFilters[p], 10) + 9)) {
         filtered.push(filteredByYear[i]);
       }
     }
@@ -251,11 +251,12 @@ async function getProducts(x) {
   products = JSON.parse(response);
   if (products !== null) {
     productsArray = Object.values(products);
+    productsKeys = Object.keys(products);
   }
   if (x === 'main') {
     adminAccess();
     logInVisibility();
-    drawProducts(products);
+    drawProducts(productsKeys);
     document.getElementById('carousel').classList.remove('invisible');
     slideShow();
   } else if (x === 'admin') {
@@ -279,14 +280,13 @@ async function getProducts(x) {
 }
 
 async function getDetails() {
-  const response = await ajax('get', 'https://final-project-d6167.firebaseio.com/.json');
   loggedIn();
   adminAccess();
   const target = location.search.substring(4);
   document.getElementById('details').classList.add('hidden');
   document.getElementById('loading').classList.remove('hidden');
-  const productsForDetails = Object.values(JSON.parse(response));
-  product = productsForDetails[target];
+  response = await ajax('get', `https://final-project-d6167.firebaseio.com/${target}.json`);
+  product = JSON.parse(response)
   document.getElementById('addToCartButton').innerHTML = `<button onclick="addToCart('${target}')">Add to Cart</button>`;
   drawDetails();
   document.getElementById('details').classList.remove('hidden');
@@ -344,15 +344,15 @@ function addToCart(target) {
 
 function verifyCart(key) {
   const currentProduct = cart[key];
-  if (productsArray.hasOwnProperty(key)) {
-    if (currentProduct.name !== productsArray[key].name) {
-      currentProduct.name = productsArray[key].name;
+  if (productsKeys.includes(key)) {
+    if (currentProduct.name !== products[key].name) {
+      currentProduct.name = products[key].name;
     }
-    if (currentProduct.price !== productsArray[key].price) {
-      currentProduct.price = productsArray[key].price;
+    if (currentProduct.price !== products[key].price) {
+      currentProduct.price = products[key].price;
     }
-    if (currentProduct.quantity > productsArray[key].stock) {
-      currentProduct.quantity = productsArray[key].stock;
+    if (currentProduct.quantity > products[key].stock) {
+      currentProduct.quantity = products[key].stock;
     }
   } else {
     remove(key);
@@ -375,7 +375,7 @@ function getCart() {
   for (const key in cart) {
     if (!isEmpty(cart)) {
       verifyCart(key);
-      if (!(productsArray.hasOwnProperty(key))) {
+      if (!(productsKeys.includes(key))) {
         continue;
       }
     }
@@ -392,15 +392,15 @@ function getCart() {
     counter += 1;
   }
   document.getElementById('cartBody').innerHTML = str;
-  document.getElementById('counter').innerHTML = `Produse: ${counter}`;
-  document.getElementById('total').innerHTML = `Total: ${total}`;
+  document.getElementById('counter').innerHTML = `Products: ${counter}`;
+  document.getElementById('total').innerHTML = `Total: ${total} $`;
   document.getElementById('products').classList.remove('hidden');
   document.getElementById('loading').classList.add('hidden');
 }
 
 function increase(key) {
   const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
-  const inStock = parseInt(productsArray[key].stock);
+  const inStock = parseInt(products[key].stock);
   if (inCart < inStock) {
     let quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity);
     quantum += 1;
@@ -478,7 +478,6 @@ function manage(key) {
 
 function getData(product) {
   if (product !== null) {
-    id = product.id;
     document.getElementById('manageImage').value = product.image;
     document.getElementById('manageName').value = product.name;
     document.getElementById('manageGenre').value = product.genre;
@@ -496,8 +495,6 @@ function getData(product) {
 }
 
 function update(action) {
-  const ids = [];
-  let ID = 0;
   const image = document.getElementById('manageImage').value;
   const name = document.getElementById('manageName').value;
   const genre = document.getElementById('manageGenre').value;
@@ -505,18 +502,7 @@ function update(action) {
   const stock = document.getElementById('manageStock').value;
   const year = document.getElementById('manageYear').value;
 
-  if (keyEdit === '') {
-    for (let i = 0; i < productsArray.length; i++) {
-      ids.push(productsArray[i].id);
-    }
-    while (ids.includes(ID.toString())) {
-      ID += 1;
-    }
-    id = ID.toString();
-  }
-
   const newProduct = {
-    id,
     image,
     name,
     genre,
