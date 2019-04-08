@@ -1,11 +1,9 @@
 let products;
-let productsArray = [];
 let productsKeys = [];
 let filteredProducts = {};
 let cart = {};
 let product;
 let keyEdit = '';
-let id;
 let accounts = {};
 let currentAccount = {};
 
@@ -106,6 +104,82 @@ function drawProducts(keys) {
   document.getElementById('loading').classList.add('hidden');
 }
 
+function verifyCart(key) {
+  const currentProduct = cart[key];
+  if (productsKeys.includes(key)) {
+    if (currentProduct.name !== products[key].name) {
+      currentProduct.name = products[key].name;
+    }
+    if (currentProduct.price !== products[key].price) {
+      currentProduct.price = products[key].price;
+    }
+    if (currentProduct.quantity > products[key].stock) {
+      currentProduct.quantity = products[key].stock;
+    }
+  } else {
+    remove(key);
+  }
+}
+
+function isEmpty(obj) {
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function getCart() {
+  let str = '';
+  let total = 0;
+  let counter = 0;
+  for (const key in cart) {
+    if (!isEmpty(cart)) {
+      verifyCart(key);
+      if (!(productsKeys.includes(key))) {
+        continue;
+      }
+    }
+    str += `
+        <tr>
+            <td><span>${cart[key].name}</span></td>
+            <td><span>${cart[key].price}</span></td>
+            <td><button onclick="increase('${key}')">+</button><span>${cart[key].quantity}</span><button onclick="decrease('${key}')">-</button></td>
+            <td><span>${cart[key].price * cart[key].quantity}</span></td>
+            <td><span onclick="remove('${key}')">Remove</span></td>
+        </tr>
+        `;
+    total += parseInt(cart[key].price) * parseInt(cart[key].quantity);
+    counter += 1;
+  }
+  document.getElementById('cartBody').innerHTML = str;
+  document.getElementById('counter').innerHTML = `Products: ${counter}`;
+  document.getElementById('total').innerHTML = `Total: ${total} $`;
+  document.getElementById('products').classList.remove('hidden');
+  document.getElementById('loading').classList.add('hidden');
+}
+
+function drawAdminProducts() {
+  let str = '';
+  for (const i in products) {
+    str += `
+        <tr>
+            <td><img width="25" height="25" src='${products[i].image}'></td>
+            <td><span onclick="manage('${i}')">${products[i].name}</span></td>
+            <td><span>${products[i].genre}</span></td>
+            <td><span>${products[i].price} $</span></td>
+            <td><span>${products[i].stock}</span></td>
+            <td><span>${products[i].year}</span></td>
+            <td><span onclick="removeProduct('${i}')">Remove</span></td>
+        </tr>
+        `;
+  }
+  document.getElementById('productsAdmin').innerHTML = str;
+  document.getElementById('products').classList.remove('hidden');
+  document.getElementById('loading').classList.add('hidden');
+}
+
 function sortAZZA(toBeSorted, criterion) {
   toBeSorted.sort((a, b) => {
     const alpha = products[a].name.toLowerCase();
@@ -170,7 +244,7 @@ function filterByGenre(genreFilters) {
     filtered = productsKeys;
     return filtered;
   }
-  for (let i = 0; i < productsArray.length; i += 1) {
+  for (let i = 0; i < productsKeys.length; i += 1) {
     if (genreFilters.includes(products[productsKeys[i]].genre)) {
       filtered.push(productsKeys[i]);
     }
@@ -222,6 +296,7 @@ async function setFilters() {
   const genreFilters = [];
   const priceFilters = [];
   let filteredByGenre = [];
+  let filteredByYear = [];
   for (let i = 0; i < 4; i += 1) {
     if (checkboxes[i].checked === true) {
       genreFilters.push(checkboxes[i].value);
@@ -250,7 +325,6 @@ async function getProducts(x) {
   const response = await ajax('get', 'https://final-project-d6167.firebaseio.com/.json');
   products = JSON.parse(response);
   if (products !== null) {
-    productsArray = Object.values(products);
     productsKeys = Object.keys(products);
   }
   if (x === 'main') {
@@ -279,20 +353,6 @@ async function getProducts(x) {
   }
 }
 
-async function getDetails() {
-  loggedIn();
-  adminAccess();
-  const target = location.search.substring(4);
-  document.getElementById('details').classList.add('hidden');
-  document.getElementById('loading').classList.remove('hidden');
-  response = await ajax('get', `https://final-project-d6167.firebaseio.com/${target}.json`);
-  product = JSON.parse(response)
-  document.getElementById('addToCartButton').innerHTML = `<button onclick="addToCart('${target}')">Add to Cart</button>`;
-  drawDetails();
-  document.getElementById('details').classList.remove('hidden');
-  document.getElementById('loading').classList.add('hidden');
-}
-
 function drawDetails() {
   document.getElementById('detail-image').src = product.image;
   document.getElementById('detail-name').innerHTML = product.name;
@@ -300,6 +360,20 @@ function drawDetails() {
   document.getElementById('detail-description').innerHTML = product.genre;
   document.getElementById('detail-price').innerHTML = `${product.price} $`;
   document.getElementById('q').max = product.stock;
+}
+
+async function getDetails() {
+  loggedIn();
+  adminAccess();
+  const target = location.search.substring(4);
+  document.getElementById('details').classList.add('hidden');
+  document.getElementById('loading').classList.remove('hidden');
+  response = await ajax('get', `https://final-project-d6167.firebaseio.com/${target}.json`);
+  product = JSON.parse(response);
+  document.getElementById('addToCartButton').innerHTML = `<button onclick="addToCart('${target}')">Add to Cart</button>`;
+  drawDetails();
+  document.getElementById('details').classList.remove('hidden');
+  document.getElementById('loading').classList.add('hidden');
 }
 
 function addToCart(target) {
@@ -342,62 +416,6 @@ function addToCart(target) {
   }
 }
 
-function verifyCart(key) {
-  const currentProduct = cart[key];
-  if (productsKeys.includes(key)) {
-    if (currentProduct.name !== products[key].name) {
-      currentProduct.name = products[key].name;
-    }
-    if (currentProduct.price !== products[key].price) {
-      currentProduct.price = products[key].price;
-    }
-    if (currentProduct.quantity > products[key].stock) {
-      currentProduct.quantity = products[key].stock;
-    }
-  } else {
-    remove(key);
-  }
-}
-
-function isEmpty(obj) {
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function getCart() {
-  let str = '';
-  let total = 0;
-  let counter = 0;
-  for (const key in cart) {
-    if (!isEmpty(cart)) {
-      verifyCart(key);
-      if (!(productsKeys.includes(key))) {
-        continue;
-      }
-    }
-    str += `
-        <tr>
-            <td><span>${cart[key].name}</span></td>
-            <td><span>${cart[key].price}</span></td>
-            <td><button onclick="increase('${key}')">+</button><span>${cart[key].quantity}</span><button onclick="decrease('${key}')">-</button></td>
-            <td><span>${cart[key].price * cart[key].quantity}</span></td>
-            <td><span onclick="remove('${key}')">Remove</span></td>
-        </tr>
-        `;
-    total += parseInt(cart[key].price) * parseInt(cart[key].quantity);
-    counter += 1;
-  }
-  document.getElementById('cartBody').innerHTML = str;
-  document.getElementById('counter').innerHTML = `Products: ${counter}`;
-  document.getElementById('total').innerHTML = `Total: ${total} $`;
-  document.getElementById('products').classList.remove('hidden');
-  document.getElementById('loading').classList.add('hidden');
-}
-
 function increase(key) {
   const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
   const inStock = parseInt(products[key].stock);
@@ -434,26 +452,6 @@ function remove(key) {
   delete cart[key];
   localStorage.setItem('cart', JSON.stringify(cart));
   getCart();
-}
-
-function drawAdminProducts() {
-  let str = '';
-  for (const i in products) {
-    str += `
-        <tr>
-            <td><img width="25" height="25" src='${products[i].image}'></td>
-            <td><span onclick="manage('${i}')">${products[i].name}</span></td>
-            <td><span>${products[i].genre}</span></td>
-            <td><span>${products[i].price} $</span></td>
-            <td><span>${products[i].stock}</span></td>
-            <td><span>${products[i].year}</span></td>
-            <td><span onclick="removeProduct('${i}')">Remove</span></td>
-        </tr>
-        `;
-  }
-  document.getElementById('productsAdmin').innerHTML = str;
-  document.getElementById('products').classList.remove('hidden');
-  document.getElementById('loading').classList.add('hidden');
 }
 
 async function removeProduct(i) {
