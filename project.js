@@ -171,7 +171,7 @@ function getCart() {
             <td><span onclick="remove('${key}')">Remove</span></td>
         </tr>
         `;
-    total += parseInt(cart[key].price) * parseInt(cart[key].quantity);
+    total += parseInt(cart[key].price, 10) * parseInt(cart[key].quantity, 10);
     counter += 1;
   }
   document.getElementById('cartBody').innerHTML = str;
@@ -183,9 +183,9 @@ function getCart() {
 
 function increase(key) {
   const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
-  const inStock = parseInt(products[key].stock);
+  const inStock = parseInt(products[key].stock, 10);
   if (inCart < inStock) {
-    let quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity);
+    let quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity, 10);
     quantum += 1;
     const cartItem = {
       name: JSON.parse(localStorage.cart)[key].name,
@@ -206,8 +206,8 @@ function remove(key) {
 
 function decrease(key) {
   const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
-  if (parseInt(inCart) > 1) {
-    const quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity) - 1;
+  if (parseInt(inCart, 10) > 1) {
+    const quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity, 10) - 1;
     const cartItem = {
       name: JSON.parse(localStorage.getItem('cart'))[key].name,
       price: JSON.parse(localStorage.getItem('cart'))[key].price,
@@ -418,7 +418,7 @@ async function getDetails() {
 function addToCart(target) {
   const { name } = product;
   const { price } = product;
-  const quantity = parseInt(document.getElementById('q').value);
+  const quantity = parseInt(document.getElementById('q').value, 10);
   let newQuantity = 0;
   let inCart = 0;
   const inStock = product.stock;
@@ -542,7 +542,7 @@ async function acquisition() {
   const ajaxes = [];
   for (key in cart) {
     const updated = products[key];
-    updated.stock -= parseInt(cart[key].quantity);
+    updated.stock -= parseInt(cart[key].quantity, 10);
     delete cart[key];
     const mypromise = await ajax('PUT', `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
     ajaxes.push(mypromise);
