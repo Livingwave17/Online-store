@@ -463,18 +463,6 @@ async function removeProduct(i) {
   }
 }
 
-function manage(key) {
-  document.getElementById('products').classList.add('hidden');
-  document.getElementById('manage').classList.remove('hidden');
-  if (key !== 'add') {
-    const product = products[key];
-    getData(product);
-    keyEdit = key;
-  } else {
-    getData(null);
-  }
-}
-
 function getData(product) {
   if (product !== null) {
     document.getElementById('manageImage').value = product.image;
@@ -490,6 +478,18 @@ function getData(product) {
     document.getElementById('managePrice').value = '';
     document.getElementById('manageStock').value = '';
     document.getElementById('manageYear').value = '';
+  }
+}
+
+function manage(key) {
+  document.getElementById('products').classList.add('hidden');
+  document.getElementById('manage').classList.remove('hidden');
+  if (key !== 'add') {
+    const product = products[key];
+    getData(product);
+    keyEdit = key;
+  } else {
+    getData(null);
   }
 }
 
