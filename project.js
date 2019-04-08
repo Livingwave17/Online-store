@@ -106,16 +106,16 @@ function drawProducts(keys) {
 
 function drawAdminProducts() {
   let str = '';
-  for (const i in products) {
+  for (let i = 0; i < productsKeys.length; i += 1) {
     str += `
         <tr>
-            <td><img width="25" height="25" src='${products[i].image}'></td>
-            <td><span onclick="manage('${i}')">${products[i].name}</span></td>
-            <td><span>${products[i].genre}</span></td>
-            <td><span>${products[i].price} $</span></td>
-            <td><span>${products[i].stock}</span></td>
-            <td><span>${products[i].year}</span></td>
-            <td><span onclick="removeProduct('${i}')">Remove</span></td>
+            <td><img width="25" height="25" src='${products[productsKeys[i]].image}'></td>
+            <td><span onclick="manage('${i}')">${products[productsKeys[i]].name}</span></td>
+            <td><span>${products[productsKeys[i]].genre}</span></td>
+            <td><span>${products[productsKeys[i]].price} $</span></td>
+            <td><span>${products[productsKeys[i]].stock}</span></td>
+            <td><span>${products[productsKeys[i]].year}</span></td>
+            <td><span onclick="removeProduct('${productsKeys[i]}')">Remove</span></td>
         </tr>
         `;
   }
