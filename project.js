@@ -567,7 +567,7 @@ function checkout() {
   }
 }
 
-function hide_log_in() {
+function hideLogIn() {
   document.getElementById('log_in_cart').classList.add('hidden');
 }
 
