@@ -104,6 +104,35 @@ function drawProducts(keys) {
   document.getElementById('loading').classList.add('hidden');
 }
 
+function drawAdminProducts() {
+  let str = '';
+  for (const i in products) {
+    str += `
+        <tr>
+            <td><img width="25" height="25" src='${products[i].image}'></td>
+            <td><span onclick="manage('${i}')">${products[i].name}</span></td>
+            <td><span>${products[i].genre}</span></td>
+            <td><span>${products[i].price} $</span></td>
+            <td><span>${products[i].stock}</span></td>
+            <td><span>${products[i].year}</span></td>
+            <td><span onclick="removeProduct('${i}')">Remove</span></td>
+        </tr>
+        `;
+  }
+  document.getElementById('productsAdmin').innerHTML = str;
+  document.getElementById('products').classList.remove('hidden');
+  document.getElementById('loading').classList.add('hidden');
+}
+
+function isEmpty(obj) {
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function verifyCart(key) {
   const currentProduct = cart[key];
   if (productsKeys.includes(key)) {
@@ -117,17 +146,9 @@ function verifyCart(key) {
       currentProduct.quantity = products[key].stock;
     }
   } else {
-    remove(key);
+    delete cart[key];
+    localStorage.setItem('cart', JSON.stringify(cart));
   }
-}
-
-function isEmpty(obj) {
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      return false;
-    }
-  }
-  return true;
 }
 
 function getCart() {
@@ -160,24 +181,42 @@ function getCart() {
   document.getElementById('loading').classList.add('hidden');
 }
 
-function drawAdminProducts() {
-  let str = '';
-  for (const i in products) {
-    str += `
-        <tr>
-            <td><img width="25" height="25" src='${products[i].image}'></td>
-            <td><span onclick="manage('${i}')">${products[i].name}</span></td>
-            <td><span>${products[i].genre}</span></td>
-            <td><span>${products[i].price} $</span></td>
-            <td><span>${products[i].stock}</span></td>
-            <td><span>${products[i].year}</span></td>
-            <td><span onclick="removeProduct('${i}')">Remove</span></td>
-        </tr>
-        `;
+function increase(key) {
+  const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
+  const inStock = parseInt(products[key].stock);
+  if (inCart < inStock) {
+    let quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity);
+    quantum += 1;
+    const cartItem = {
+      name: JSON.parse(localStorage.cart)[key].name,
+      price: JSON.parse(localStorage.cart)[key].price,
+      quantity: quantum,
+    };
+    cart[key] = cartItem;
+    localStorage.setItem('cart', JSON.stringify(cart));
+    getCart();
   }
-  document.getElementById('productsAdmin').innerHTML = str;
-  document.getElementById('products').classList.remove('hidden');
-  document.getElementById('loading').classList.add('hidden');
+}
+
+function remove(key) {
+  delete cart[key];
+  localStorage.setItem('cart', JSON.stringify(cart));
+  getCart();
+}
+
+function decrease(key) {
+  const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
+  if (parseInt(inCart) > 1) {
+    const quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity) - 1;
+    const cartItem = {
+      name: JSON.parse(localStorage.getItem('cart'))[key].name,
+      price: JSON.parse(localStorage.getItem('cart'))[key].price,
+      quantity: quantum,
+    };
+    cart[key] = cartItem;
+    localStorage.setItem('cart', JSON.stringify(cart));
+    getCart();
+  }
 }
 
 function sortAZZA(toBeSorted, criterion) {
@@ -414,44 +453,6 @@ function addToCart(target) {
       document.getElementById('invalidOrder').classList.add('hidden');
     }, 3000);
   }
-}
-
-function increase(key) {
-  const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
-  const inStock = parseInt(products[key].stock);
-  if (inCart < inStock) {
-    let quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity);
-    quantum += 1;
-    const cartItem = {
-      name: JSON.parse(localStorage.cart)[key].name,
-      price: JSON.parse(localStorage.cart)[key].price,
-      quantity: quantum,
-    };
-    cart[key] = cartItem;
-    localStorage.setItem('cart', JSON.stringify(cart));
-    getCart();
-  }
-}
-
-function decrease(key) {
-  const inCart = JSON.parse(localStorage.getItem('cart'))[key].quantity;
-  if (parseInt(inCart) > 1) {
-    const quantum = parseInt(JSON.parse(localStorage.getItem('cart'))[key].quantity) - 1;
-    const cartItem = {
-      name: JSON.parse(localStorage.getItem('cart'))[key].name,
-      price: JSON.parse(localStorage.getItem('cart'))[key].price,
-      quantity: quantum,
-    };
-    cart[key] = cartItem;
-    localStorage.setItem('cart', JSON.stringify(cart));
-    getCart();
-  }
-}
-
-function remove(key) {
-  delete cart[key];
-  localStorage.setItem('cart', JSON.stringify(cart));
-  getCart();
 }
 
 async function removeProduct(i) {
