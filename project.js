@@ -493,6 +493,24 @@ function getData(product) {
   }
 }
 
+async function upload(action, newProduct) {
+  if (action === 'cancel') {
+    document.getElementById('products').classList.remove('hidden');
+    document.getElementById('manage').classList.add('hidden');
+    keyEdit = '';
+  } else if (keyEdit === '') {
+    await ajax('POST', 'https://final-project-d6167.firebaseio.com/.json', JSON.stringify(newProduct));
+    getProducts('admin');
+    document.getElementById('manage').classList.add('hidden');
+  } else {
+    await ajax('PUT', `https://final-project-d6167.firebaseio.com/${keyEdit}.json`, JSON.stringify(newProduct));
+    getProducts('admin');
+    document.getElementById('products').classList.remove('hidden');
+    document.getElementById('manage').classList.add('hidden');
+    keyEdit = '';
+  }
+}
+
 function update(action) {
   const image = document.getElementById('manageImage').value;
   const name = document.getElementById('manageName').value;
@@ -512,22 +530,28 @@ function update(action) {
   upload(action, newProduct);
 }
 
-async function upload(action, newProduct) {
-  if (action === 'cancel') {
-    document.getElementById('products').classList.remove('hidden');
-    document.getElementById('manage').classList.add('hidden');
-    keyEdit = '';
-  } else if (keyEdit === '') {
-    await ajax('POST', 'https://final-project-d6167.firebaseio.com/.json', JSON.stringify(newProduct));
-    getProducts('admin');
-    document.getElementById('manage').classList.add('hidden');
-  } else {
-    await ajax('PUT', `https://final-project-d6167.firebaseio.com/${keyEdit}.json`, JSON.stringify(newProduct));
-    getProducts('admin');
-    document.getElementById('products').classList.remove('hidden');
-    document.getElementById('manage').classList.add('hidden');
-    keyEdit = '';
+function transaction() {
+  document.getElementById('processing').classList.add('hidden');
+  document.getElementById('products').classList.add('hidden');
+  document.getElementById('log_out').classList.add('hidden');
+  document.getElementById('transaction').classList.remove('hidden');
+}
+
+async function acquisition() {
+  document.getElementById('processing').classList.remove('hidden');
+  const ajaxes = [];
+  for (key in cart) {
+    const updated = products[key];
+    updated.stock -= parseInt(cart[key].quantity);
+    delete cart[key];
+    const mypromise = await ajax('PUT', `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
+    ajaxes.push(mypromise);
+    if (isEmpty(cart)) {
+      localStorage.removeItem('cart');
+    }
   }
+  await Promise.all(ajaxes);
+  transaction();
 }
 
 function checkout() {
@@ -547,30 +571,6 @@ function hide_log_in() {
   document.getElementById('log_in_cart').classList.add('hidden');
 }
 
-function transaction() {
-  document.getElementById('processing').classList.add('hidden');
-  document.getElementById('products').classList.add('hidden');
-  document.getElementById('log_out').classList.add('hidden');
-  document.getElementById('transaction').classList.remove('hidden');
-}
-
 function checkoutRedirect() {
   window.location.replace('./project.html');
-}
-
-async function acquisition() {
-  document.getElementById('processing').classList.remove('hidden');
-  const ajaxes = [];
-  for (key in cart) {
-    const updated = products[key];
-    updated.stock -= parseInt(cart[key].quantity);
-    delete cart[key];
-    const mypromise = await ajax('PUT', `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
-    ajaxes.push(mypromise);
-    if (isEmpty(cart)) {
-      localStorage.removeItem('cart');
-    }
-  }
-  await Promise.all(ajaxes);
-  transaction();
 }
