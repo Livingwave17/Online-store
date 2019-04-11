@@ -159,7 +159,7 @@ function getCart() {
     if (!isEmpty(cart)) {
       verifyCart(key);
       if (!(productsKeys.includes(key))) {
-        continue;
+        // continue
       }
     }
     str += `
@@ -407,7 +407,7 @@ async function getDetails() {
   const target = window.location.search.substring(4);
   document.getElementById('details').classList.add('hidden');
   document.getElementById('loading').classList.remove('hidden');
-  response = await ajax('get', `https://final-project-d6167.firebaseio.com/${target}.json`);
+  const response = await ajax('get', `https://final-project-d6167.firebaseio.com/${target}.json`);
   product = JSON.parse(response);
   document.getElementById('addToCartButton').innerHTML = `<button onclick="addToCart('${target}')">Add to Cart</button>`;
   drawDetails();
@@ -438,8 +438,8 @@ function addToCart(target) {
     price,
     quantity: newQuantity,
   };
-  if (isNaN(quantity) || quantity === 0) {
-
+  if (Number.isNaN(quantity) || quantity === 0) {
+    // continue
   } else if (quantity + inCart < inStock) {
     cart[target] = cartItem;
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -456,21 +456,21 @@ function addToCart(target) {
 }
 
 async function removeProduct(i) {
-  const confirmDelete = confirm('Confirm Delete?');
+  const confirmDelete = window.confirm('Confirm Delete?');
   if (confirmDelete === true) {
     await ajax('DELETE', `https://final-project-d6167.firebaseio.com/${i}.json`);
     getProducts('admin');
   }
 }
 
-function getData(product) {
-  if (product !== null) {
-    document.getElementById('manageImage').value = product.image;
-    document.getElementById('manageName').value = product.name;
-    document.getElementById('manageGenre').value = product.genre;
-    document.getElementById('managePrice').value = product.price;
-    document.getElementById('manageStock').value = product.stock;
-    document.getElementById('manageYear').value = product.year;
+function getData(clickedProduct) {
+  if (clickedProduct !== null) {
+    document.getElementById('manageImage').value = clickedProduct.image;
+    document.getElementById('manageName').value = clickedProduct.name;
+    document.getElementById('manageGenre').value = clickedProduct.genre;
+    document.getElementById('managePrice').value = clickedProduct.price;
+    document.getElementById('manageStock').value = clickedProduct.stock;
+    document.getElementById('manageYear').value = clickedProduct.year;
   } else {
     document.getElementById('manageImage').value = '';
     document.getElementById('manageName').value = '';
@@ -540,7 +540,7 @@ function transaction() {
 async function acquisition() {
   document.getElementById('processing').classList.remove('hidden');
   const ajaxes = [];
-  for (key in cart) {
+  for (const key in cart) {
     const updated = products[key];
     updated.stock -= parseInt(cart[key].quantity, 10);
     delete cart[key];
