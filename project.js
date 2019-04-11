@@ -110,7 +110,7 @@ function drawAdminProducts() {
     str += `
         <tr>
             <td><img width="25" height="25" src='${products[productsKeys[i]].image}'></td>
-            <td><span onclick="manage('${i}')">${products[productsKeys[i]].name}</span></td>
+            <td><span onclick="manage('${productsKeys[i]}')">${products[productsKeys[i]].name}</span></td>
             <td><span>${products[productsKeys[i]].genre}</span></td>
             <td><span>${products[productsKeys[i]].price} $</span></td>
             <td><span>${products[productsKeys[i]].stock}</span></td>
@@ -404,7 +404,7 @@ function drawDetails() {
 async function getDetails() {
   loggedIn();
   adminAccess();
-  const target = location.search.substring(4);
+  const target = window.location.search.substring(4);
   document.getElementById('details').classList.add('hidden');
   document.getElementById('loading').classList.remove('hidden');
   response = await ajax('get', `https://final-project-d6167.firebaseio.com/${target}.json`);
@@ -485,7 +485,7 @@ function manage(key) {
   document.getElementById('products').classList.add('hidden');
   document.getElementById('manage').classList.remove('hidden');
   if (key !== 'add') {
-    const product = products[key];
+    product = products[key];
     getData(product);
     keyEdit = key;
   } else {
@@ -544,7 +544,7 @@ async function acquisition() {
     const updated = products[key];
     updated.stock -= parseInt(cart[key].quantity, 10);
     delete cart[key];
-    const mypromise = await ajax('PUT', `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
+    const mypromise = ajax('PUT', `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
     ajaxes.push(mypromise);
     if (isEmpty(cart)) {
       localStorage.removeItem('cart');
@@ -557,7 +557,7 @@ async function acquisition() {
 function checkout() {
   if (localStorage.getItem('logged_in')) {
     if (!isEmpty(cart)) {
-      const buy = confirm('Confirm transaction?');
+      const buy = window.confirm('Confirm transaction?');
       if (buy === true) {
         acquisition();
       }
