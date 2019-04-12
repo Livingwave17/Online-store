@@ -2,6 +2,7 @@ let products;
 let productsKeys = [];
 let filteredProducts = {};
 let cart = {};
+let cartEntries = [];
 let product;
 let keyEdit = '';
 let accounts = {};
@@ -125,8 +126,9 @@ function drawAdminProducts() {
 }
 
 function isEmpty(obj) {
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+  const objKeys = Object.keys(obj);
+  for (let key = 0; key < objKeys.length; key += 1) {
+    if (Object.prototype.hasOwnProperty.call(obj, objKeys[key])) {
       return false;
     }
   }
@@ -155,23 +157,24 @@ function getCart() {
   let str = '';
   let total = 0;
   let counter = 0;
-  for (const key in cart) {
+  cartEntries = Object.entries(cart);
+  for (let key = 0; key < cartEntries.length; key += 1) {
     if (!isEmpty(cart)) {
-      verifyCart(key);
+      verifyCart(cartEntries[key][0]);
       if (!(productsKeys.includes(key))) {
         // continue
       }
     }
     str += `
         <tr>
-            <td><span>${cart[key].name}</span></td>
-            <td><span>${cart[key].price}</span></td>
-            <td><button onclick="increase('${key}')">+</button><span>${cart[key].quantity}</span><button onclick="decrease('${key}')">-</button></td>
-            <td><span>${cart[key].price * cart[key].quantity}</span></td>
-            <td><span onclick="remove('${key}')">Remove</span></td>
+            <td><span>${cartEntries[key][1].name}</span></td>
+            <td><span>${cartEntries[key][1].price}</span></td>
+            <td><button onclick="increase('${cartEntries[key][0]}')">+</button><span>${cartEntries[key][1].quantity}</span><button onclick="decrease('${cartEntries[key][0]}')">-</button></td>
+            <td><span>${cartEntries[key][0].price * cartEntries[key][0].quantity}</span></td>
+            <td><span onclick="remove('${cartEntries[key][0]}')">Remove</span></td>
         </tr>
         `;
-    total += parseInt(cart[key].price, 10) * parseInt(cart[key].quantity, 10);
+    total += parseInt(cartEntries[key][1].price, 10) * parseInt(cartEntries[key][1].quantity, 10);
     counter += 1;
   }
   document.getElementById('cartBody').innerHTML = str;
@@ -540,11 +543,11 @@ function transaction() {
 async function acquisition() {
   document.getElementById('processing').classList.remove('hidden');
   const ajaxes = [];
-  for (const key in cart) {
-    const updated = products[key];
-    updated.stock -= parseInt(cart[key].quantity, 10);
-    delete cart[key];
-    const mypromise = ajax('PUT', `https://final-project-d6167.firebaseio.com/${key}.json`, JSON.stringify(updated));
+  for (let key = 0; key < cartEntries.length; key += 1) {
+    const updated = products[cartEntries[key][0]];
+    updated.stock -= parseInt(cart[cartEntries[key][0]].quantity, 10);
+    delete cart[cartEntries[key][0]];
+    const mypromise = ajax('PUT', `https://final-project-d6167.firebaseio.com/${cartEntries[key][0]}.json`, JSON.stringify(updated));
     ajaxes.push(mypromise);
     if (isEmpty(cart)) {
       localStorage.removeItem('cart');
